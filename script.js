@@ -1,7 +1,5 @@
 let isFetching = false;
 let currentData = [];
-
-document.getElementById('scrollToBottomButton').addEventListener('click', () => { document.getElementById('bottom-of-page').scrollIntoView({ behavior: 'smooth' });
                                                                                  
 async function fetchHtmlContent(pubhtmlUrl) {
     // Add a timestamp to the URL to prevent caching
