@@ -3,7 +3,6 @@ async function fetchHtmlContent(pubhtmlUrl) {
     const urlWithTimestamp = `${pubhtmlUrl}?t=${new Date().getTime()}`;
     const response = await fetch(urlWithTimestamp);
     const html = await response.text();
-    console.log('Fetched HTML:', html); // Debugging line
     return html;
 }
 
@@ -21,14 +20,12 @@ function parseHtml(html) {
         };
     });
 
-    console.log('Parsed Data:', data); // Debugging line
     return data;
 }
 
 function displayMessages(data) {
     const chatContainer = document.getElementById('chat-container');
     chatContainer.innerHTML = ''; // Clear existing messages
-    console.log('Displaying Messages:', data); // Debugging line
     data.forEach(entry => {
         const chatBubble = document.createElement('div');
         chatBubble.className = 'chat-bubble';
@@ -57,7 +54,6 @@ async function fetchDataAndUpdate() {
     const pubhtmlUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQazrkD8DxsLDMhQ4X78vjlIjq1wos7C-0dge7NDG0EBkJ7jhePsJYXCGUvMV79GaNcAa1hJYS_M-5Z/pubhtml';
     const html = await fetchHtmlContent(pubhtmlUrl);
     const data = parseHtml(html);
-    console.log('Updated Data:', data); // Debugging line
     displayMessages(data);
 }
 
