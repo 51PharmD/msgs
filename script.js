@@ -1,5 +1,7 @@
 async function fetchHtmlContent(pubhtmlUrl) {
-    const response = await fetch(pubhtmlUrl);
+    // Add a timestamp to the URL to prevent caching
+    const urlWithTimestamp = `${pubhtmlUrl}?t=${new Date().getTime()}`;
+    const response = await fetch(urlWithTimestamp);
     const html = await response.text();
     console.log('Fetched HTML:', html); // Debugging line
     return html;
