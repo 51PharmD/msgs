@@ -1,4 +1,5 @@
 let isFetching = false;
+let currentData = [];
 
 async function fetchHtmlContent(pubhtmlUrl) {
     // Add a timestamp to the URL to prevent caching
@@ -59,8 +60,13 @@ async function fetchDataAndUpdate() {
     try {
         const pubhtmlUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQazrkD8DxsLDMhQ4X78vjlIjq1wos7C-0dge7NDG0EBkJ7jhePsJYXCGUvMV79GaNcAa1hJYS_M-5Z/pubhtml';
         const html = await fetchHtmlContent(pubhtmlUrl);
-        const data = parseHtml(html);
-        displayMessages(data);
+        const newData = parseHtml(html);
+        
+        // Update the display only if new data is different
+        if (JSON.stringify(newData) !== JSON.stringify(currentData)) {
+            currentData = newData;
+            displayMessages(newData);
+        }
     } catch (error) {
         console.error('Error fetching data:', error);
     } finally {
