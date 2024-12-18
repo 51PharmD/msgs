@@ -22,14 +22,24 @@
         if (sheetId) {
             const jsonUrl = `https://spreadsheets.google.com/feeds/list/${sheetId[0]}/od6/public/values?alt=json`;
 
+            console.log('Fetching data from:', jsonUrl); // Log the URL to confirm it's correct
+
             fetch(jsonUrl)
-                .then(response => response.json())
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`Network response was not ok: ${response.statusText}`);
+                    }
+                    return response.json();
+                })
                 .then(data => {
+                    console.log('Data fetched:', data); // Log the data fetched
                     const messages = data.feed.entry;
                     const messagesDiv = document.getElementById('messages');
                     messages.forEach(entry => {
                         const messageText = entry.gsx$message.$t;
                         const signature = entry.gsx$signature.$t;
+
+                        console.log('Message:', messageText, 'Signature:', signature); // Log each message
 
                         const messageDiv = document.createElement('div');
                         messageDiv.className = 'message';
