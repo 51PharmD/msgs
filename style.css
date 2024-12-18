@@ -42,6 +42,8 @@ iframe {
     margin-right: 10%;
 }
 
+.sort-container { margin-bottom: 20px; text-align: center; }
+
 .chat-container {
     width: 80%;
     max-width: 600px;
