@@ -5,96 +5,42 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Anonymous Messages</title>
     <style>
-        body { font-family: Arial, sans-serif; }
-        .message { border: 1px solid #ddd; padding: 10px; margin: 10px 0; }
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .message { border: 1px solid #ddd; padding: 10px; margin: 10px 0; border-radius: 5px; background: #f9f9f9; }
+        iframe { border: none; width: 100%; height: 500px; }
     </style>
 </head>
 <body>
     <h1>Anonymous Messages</h1>
-    <form id="messageForm">
-        <textarea id="messageText" rows="4" placeholder="Your message..."></textarea><br>
-        <input type="text" id="signature" placeholder="Your signature (optional)"><br>
-        <button type="button" onclick="submitMessage()">Submit</button>
-    </form>
     <div id="messages"></div>
+    <h2>Submit a Message</h2>
+    <iframe src="https://forms.gle/SdR5MshYBk5wCd1G8"></iframe>
     <script>
-        const repoOwner = '51PharmD'; // Your GitHub username
-        const repoName = 'msgs'; // Your repository name
-        const branchName = 'main';
-        const filePath = 'messages.json';
-        const token = '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'; // Your GitHub personal access token
+        const sheetUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQazrkD8DxsLDMhQ4X78vjlIjq1wos7C-0dge7NDG0EBkJ7jhePsJYXCGUvMV79GaNcAa1hJYS_M-5Z/pubhtml';
+        const sheetId = sheetUrl.match(/[-\w]{25,}/);
 
-        let messages = [];
+        if (sheetId) {
+            const jsonUrl = `https://spreadsheets.google.com/feeds/list/${sheetId[0]}/od6/public/values?alt=json`;
 
-        async function loadMessages() {
-            const url = `https://api.github.com/repos/${repoOwner}/${repoName}/contents/${filePath}?ref=${branchName}`;
-            const response = await fetch(url, {
-                headers: {
-                    'Authorization': `token ${token}`,
-                    'Accept': 'application/vnd.github.v3+json'
-                }
-            });
-            const data = await response.json();
-            const content = atob(data.content);
-            messages = JSON.parse(content);
-            displayMessages();
-        }
+            fetch(jsonUrl)
+                .then(response => response.json())
+                .then(data => {
+                    const messages = data.feed.entry;
+                    const messagesDiv = document.getElementById('messages');
+                    messages.forEach(entry => {
+                        const messageText = entry.gsx$message.$t;
+                        const signature = entry.gsx$signature.$t;
 
-        function displayMessages() {
-            const messagesDiv = document.getElementById('messages');
-            messagesDiv.innerHTML = '';
-            messages.forEach((message) => {
-                const messageDiv = document.createElement('div');
-                messageDiv.className = 'message';
-                messageDiv.innerHTML = `<p>${message.text}</p><p><em>${message.signature ? '-' + message.signature : ''}</em></p>`;
-                messagesDiv.appendChild(messageDiv);
-            });
-        }
-
-        async function submitMessage() {
-            const messageText = document.getElementById('messageText').value;
-            const signature = document.getElementById('signature').value;
-            if (messageText) {
-                const newMessage = { text: messageText, signature: signature };
-                messages.push(newMessage);
-                displayMessages();
-                await saveMessages();
-                document.getElementById('messageForm').reset();
-            }
-        }
-
-        async function saveMessages() {
-            const content = btoa(JSON.stringify(messages, null, 2));
-            const sha = await getCurrentFileSha();
-            const url = `https://api.github.com/repos/${repoOwner}/${repoName}/contents/${filePath}`;
-            await fetch(url, {
-                method: 'PUT',
-                headers: {
-                    'Authorization': `token ${token}`,
-                    'Accept': 'application/vnd.github.v3+json'
-                },
-                body: JSON.stringify({
-                    message: 'Update messages',
-                    content: content,
-                    sha: sha,
-                    branch: branchName
+                        const messageDiv = document.createElement('div');
+                        messageDiv.className = 'message';
+                        messageDiv.innerHTML = `<p>${messageText}</p><p><em>${signature ? '-' + signature : ''}</em></p>`;
+                        messagesDiv.appendChild(messageDiv);
+                    });
                 })
-            });
+                .catch(error => console.error('Error fetching data:', error));
+        } else {
+            console.error('Invalid Google Sheets URL');
         }
-
-        async function getCurrentFileSha() {
-            const url = `https://api.github.com/repos/${repoOwner}/${repoName}/contents/${filePath}?ref=${branchName}`;
-            const response = await fetch(url, {
-                headers: {
-                    'Authorization': `token ${token}`,
-                    'Accept': 'application/vnd.github.v3+json'
-                }
-            });
-            const data = await response.json();
-            return data.sha;
-        }
-
-        window.onload = loadMessages;
     </script>
 </body>
 </html>
