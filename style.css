@@ -1,6 +1,6 @@
 body {
     font-family: Arial, sans-serif;
-    background-color: #6b313f;
+    background-color: #e4e0d7;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -9,13 +9,13 @@ body {
 }
 
 h1 {
-    color: #e4e0d7;
+    color: #6B313F;
 }
 
 button {
     padding: 10px 20px;
     margin-bottom: 20px;
-    background-color: #1E3A4F;
+    background-color: #007BFF;
     color: white;
     border: none;
     border-radius: 5px;
@@ -23,7 +23,7 @@ button {
 }
 
 button:hover {
-    background-color: #1E3A4F;
+    background-color: #1F3B51;
 }
 
 .note { font-size: 0.85em; color: #555; margin-bottom: 20px; }
@@ -71,7 +71,7 @@ iframe {
 
 .message {
     margin-top: 5px;
-    color: #007BFF;
+    color: #213d53;
     margin-bottom: 5px;
     line-height: 1.6;
 }
