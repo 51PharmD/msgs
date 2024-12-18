@@ -1,6 +1,6 @@
 body {
     font-family: Arial, sans-serif;
-    background-color: #e4e0d7;
+    background-color: #6b313f;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -9,13 +9,13 @@ body {
 }
 
 h1 {
-    color: #6B313F;
+    color: #e4e0d7;
 }
 
 button {
     padding: 10px 20px;
     margin-bottom: 20px;
-    background-color: #007BFF;
+    background-color: #1E3A4F;
     color: white;
     border: none;
     border-radius: 5px;
@@ -23,7 +23,7 @@ button {
 }
 
 button:hover {
-    background-color: #1F3B51;
+    background-color: #1E3A4F;
 }
 
 .note { font-size: 0.85em; color: #555; margin-bottom: 20px; }
