@@ -79,3 +79,15 @@ fetchDataAndUpdate();
 
 // Set interval to refresh data every 10 seconds (10000 milliseconds)
 setInterval(fetchDataAndUpdate, 10000);
+
+// Toggle form visibility
+document.getElementById('toggleFormButton').addEventListener('click', () => {
+    const formContainer = document.getElementById('formContainer');
+    if (formContainer.classList.contains('hidden')) {
+        formContainer.classList.remove('hidden');
+        document.getElementById('toggleFormButton').textContent = 'Close Form';
+    } else {
+        formContainer.classList.add('hidden');
+        document.getElementById('toggleFormButton').textContent = 'Open Form';
+    }
+});
