@@ -75,7 +75,7 @@ async function fetchDataAndUpdate() {
             currentData = newData;
             const sortOrder = document.getElementById('sortOrder').value;
             const sortedData = sortData(currentData, sortOrder);
-            displayMessages(sortedData); // Ensure this line updates the display
+            displayMessages(sortedData);
         }
     } catch (error) {
         console.error('Error fetching data:', error);
