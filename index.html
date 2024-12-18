@@ -11,8 +11,10 @@
 </head>
 <body>
     <h1>Submit Your Message</h1>
-    <!-- Embed Google Form -->
-    <iframe src="https://forms.gle/SdR5MshYBk5wCd1G8" width="640" height="480" frameborder="0" marginheight="0" marginwidth="0">Loading…</iframe>
+    <button id="toggleFormButton">Open Form</button>
+    <div id="formContainer" class="hidden">
+        <iframe src="https://forms.gle/SdR5MshYBk5wCd1G8" width="640" height="480" frameborder="0" marginheight="0" marginwidth="0">Loading…</iframe>
+    </div>
     
     <h1>Submitted Messages</h1>
     <div id="chat-container" class="chat-container"></div>
