@@ -89,3 +89,5 @@ iframe {
     text-align: right;
     margin-top: 5px;
 }
+
+#bottom-of-page { height: 50px; /* Just to ensure it is visible */ }
