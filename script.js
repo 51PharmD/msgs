@@ -1,6 +1,7 @@
 async function fetchHtmlContent(pubhtmlUrl) {
     const response = await fetch(pubhtmlUrl);
     const html = await response.text();
+    console.log('Fetched HTML:', html); // Debugging line
     return html;
 }
 
@@ -12,11 +13,12 @@ function parseHtml(html) {
     const data = Array.from(rows).slice(1).map(row => {
         const cells = row.querySelectorAll('td');
         return {
-            message: cells[0].innerText.trim(),
-            signature: cells[1].innerText.trim()
+            message: cells[1]?.innerText.trim() || '',
+            signature: cells[2]?.innerText.trim() || ''
         };
     });
-    
+
+    console.log('Parsed Data:', data); // Debugging line
     return data;
 }
 
@@ -48,5 +50,5 @@ function fetchDataAndUpdate() {
 // Fetch data initially
 fetchDataAndUpdate();
 
-// Set interval to refresh data every 60 seconds (60000 milliseconds)
-setInterval(fetchDataAndUpdate, 60000);
+// Set interval to refresh data every 10 seconds (10000 milliseconds)
+setInterval(fetchDataAndUpdate, 10000);
