@@ -1,6 +1,6 @@
 let isFetching = false;
 let currentData = [];
-                                                                                 
+
 async function fetchHtmlContent(pubhtmlUrl) {
     // Add a timestamp to the URL to prevent caching
     const urlWithTimestamp = `${pubhtmlUrl}?t=${new Date().getTime()}`;
