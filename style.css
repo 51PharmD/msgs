@@ -38,6 +38,8 @@ iframe {
         text-align: center;
     border: none;
     margin-bottom: 20px;
+    margin-left: 10%;
+    margin-right: 10%;
 }
 
 .chat-container {
