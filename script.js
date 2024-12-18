@@ -1,3 +1,5 @@
+let isFetching = false;
+
 async function fetchHtmlContent(pubhtmlUrl) {
     // Add a timestamp to the URL to prevent caching
     const urlWithTimestamp = `${pubhtmlUrl}?t=${new Date().getTime()}`;
@@ -51,10 +53,19 @@ function displayMessages(data) {
 }
 
 async function fetchDataAndUpdate() {
-    const pubhtmlUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQazrkD8DxsLDMhQ4X78vjlIjq1wos7C-0dge7NDG0EBkJ7jhePsJYXCGUvMV79GaNcAa1hJYS_M-5Z/pubhtml';
-    const html = await fetchHtmlContent(pubhtmlUrl);
-    const data = parseHtml(html);
-    displayMessages(data);
+    if (isFetching) return;
+    isFetching = true;
+
+    try {
+        const pubhtmlUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQazrkD8DxsLDMhQ4X78vjlIjq1wos7C-0dge7NDG0EBkJ7jhePsJYXCGUvMV79GaNcAa1hJYS_M-5Z/pubhtml';
+        const html = await fetchHtmlContent(pubhtmlUrl);
+        const data = parseHtml(html);
+        displayMessages(data);
+    } catch (error) {
+        console.error('Error fetching data:', error);
+    } finally {
+        isFetching = false;
+    }
 }
 
 // Fetch data initially
