@@ -22,6 +22,7 @@ function parseHtml(html) {
 
 function displayMessages(data) {
     const chatContainer = document.getElementById('chat-container');
+    chatContainer.innerHTML = ''; // Clear existing messages
     data.forEach(entry => {
         const chatBubble = document.createElement('div');
         chatBubble.className = 'chat-bubble';
@@ -36,8 +37,16 @@ function displayMessages(data) {
     });
 }
 
-const pubhtmlUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQazrkD8DxsLDMhQ4X78vjlIjq1wos7C-0dge7NDG0EBkJ7jhePsJYXCGUvMV79GaNcAa1hJYS_M-5Z/pubhtml';
-fetchHtmlContent(pubhtmlUrl).then(html => {
-    const data = parseHtml(html);
-    displayMessages(data);
-});
+function fetchDataAndUpdate() {
+    const pubhtmlUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQazrkD8DxsLDMhQ4X78vjlIjq1wos7C-0dge7NDG0EBkJ7jhePsJYXCGUvMV79GaNcAa1hJYS_M-5Z/pubhtml';
+    fetchHtmlContent(pubhtmlUrl).then(html => {
+        const data = parseHtml(html);
+        displayMessages(data);
+    });
+}
+
+// Fetch data initially
+fetchDataAndUpdate();
+
+// Set interval to refresh data every 60 seconds (60000 milliseconds)
+setInterval(fetchDataAndUpdate, 60000);
