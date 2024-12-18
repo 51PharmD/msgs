@@ -15,7 +15,7 @@ h1 {
 button {
     padding: 10px 20px;
     margin-bottom: 20px;
-    background-color: #007BFF;
+    background-color: #213d53;
     color: white;
     border: none;
     border-radius: 5px;
@@ -23,7 +23,7 @@ button {
 }
 
 button:hover {
-    background-color: #1F3B51;
+    background-color: #213d53;
 }
 
 .note { font-size: 0.85em; color: #555; margin-bottom: 20px; }
