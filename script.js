@@ -75,7 +75,7 @@ async function fetchDataAndUpdate() {
             currentData = newData;
             const sortOrder = document.getElementById('sortOrder').value;
             const sortedData = sortData(currentData, sortOrder);
-            displayMessages(sortedData);
+            displayMessages(sortedData); // Ensure this line updates the display
         }
     } catch (error) {
         console.error('Error fetching data:', error);
@@ -106,3 +106,5 @@ document.getElementById('toggleFormButton').addEventListener('click', () => {
     } else {
         formContainer.classList.add('hidden');
         document.getElementById('toggleFormButton').textContent = 'Open Form';
+    }
+});
