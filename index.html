@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anonymous Messages</title>
+    <style>
+        body { font-family: Arial, sans-serif; }
+        .message { border: 1px solid #ddd; padding: 10px; margin: 10px 0; }
+    </style>
+</head>
+<body>
+    <h1>Anonymous Messages</h1>
+    <form id="messageForm">
+        <textarea id="messageText" rows="4" placeholder="Your message..."></textarea><br>
+        <input type="text" id="signature" placeholder="Your signature (optional)"><br>
+        <button type="button" onclick="submitMessage()">Submit</button>
+    </form>
+    <div id="messages"></div>
+    <script>
+        let messages = [];
+
+        function loadMessages() {
+            fetch('messages.json')
+                .then(response => response.json())
+                .then(data => {
+                    messages = data;
+                    displayMessages();
+                });
+        }
+
+        function displayMessages() {
+            const messagesDiv = document.getElementById('messages');
+            messagesDiv.innerHTML = '';
+            messages.forEach((message, index) => {
+                const messageDiv = document.createElement('div');
+                messageDiv.className = 'message';
+                messageDiv.innerHTML = `<p>${message.text}</p><p><em>${message.signature ? '-' + message.signature : ''}</em></p>`;
+                messagesDiv.appendChild(messageDiv);
+            });
+        }
+
+        function submitMessage() {
+            const messageText = document.getElementById('messageText').value;
+            const signature = document.getElementById('signature').value;
+            if (messageText) {
+                const newMessage = { text: messageText, signature: signature };
+                messages.push(newMessage);
+                displayMessages();
+                saveMessages();
+                document.getElementById('messageForm').reset();
+            }
+        }
+
+        function saveMessages() {
+            const json = JSON.stringify(messages, null, 2);
+            const blob = new Blob([json], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'messages.json';
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        window.onload = loadMessages;
+    </script>
+</body>
+</html>
