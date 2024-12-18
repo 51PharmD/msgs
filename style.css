@@ -35,6 +35,7 @@ button:hover {
 iframe {
     width: 80%;
     height: 300px;
+        text-align: center;
     border: none;
     margin-bottom: 20px;
 }
@@ -42,7 +43,7 @@ iframe {
 .chat-container {
     width: 80%;
     max-width: 600px;
-    background-color: #E4E0D7;
+    background-color: #6b313f;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     padding: 20px;
     border-radius: 10px;
@@ -50,7 +51,7 @@ iframe {
 }
 
 .chat-bubble {
-    background-color: #e0e0e0;
+    background-color: #e4e0d7;
     border-radius: 20px;
     padding: 15px;
     margin-bottom: 15px;
