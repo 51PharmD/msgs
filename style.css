@@ -9,7 +9,7 @@ body {
 }
 
 h1 {
-    color: #333;
+    color: #6B313F;
 }
 
 button {
@@ -23,8 +23,10 @@ button {
 }
 
 button:hover {
-    background-color: #0056b3;
+    background-color: #1F3B51;
 }
+
+.note { font-size: 0.85em; color: #555; margin-bottom: 20px; }
 
 .hidden {
     display: none;
@@ -40,7 +42,7 @@ iframe {
 .chat-container {
     width: 80%;
     max-width: 600px;
-    background-color: #fff;
+    background-color: #E4E0D7;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     padding: 20px;
     border-radius: 10px;
@@ -69,6 +71,7 @@ iframe {
 
 .message {
     margin-top: 5px;
+    color: #007BFF;
     margin-bottom: 5px;
     line-height: 1.6;
 }
