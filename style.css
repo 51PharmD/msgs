@@ -1,5 +1,5 @@
 body {
-    font-family: Arial, sans-serif;
+    font-family: 'Cairo';
     background-color: #e4e0d7;
     display: flex;
     flex-direction: column;
@@ -51,7 +51,7 @@ iframe {
 }
 
 .chat-bubble {
-    background-color: #e4e0d7;
+    background-color: #fee4cf;
     border-radius: 20px;
     padding: 15px;
     margin-bottom: 15px;
