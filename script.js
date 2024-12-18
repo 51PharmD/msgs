@@ -1,6 +1,8 @@
 let isFetching = false;
 let currentData = [];
 
+// Fetch, parse, and sort functions remain the same... // Add scroll event document.getElementById('scrollToBottomButton').addEventListener('click', () => { document.getElementById('bottom-of-page').scrollIntoView({ behavior: 'smooth' }); }); // Toggle form visibility event remains the same...
+
 async function fetchHtmlContent(pubhtmlUrl) {
     // Add a timestamp to the URL to prevent caching
     const urlWithTimestamp = `${pubhtmlUrl}?t=${new Date().getTime()}`;
