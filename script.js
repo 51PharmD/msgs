@@ -26,6 +26,14 @@ function parseHtml(html) {
     return data;
 }
 
+function sortData(data, order) {
+    if (order === 'oldest') {
+        return data.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+    } else {
+        return data.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+    }
+}
+
 function displayMessages(data) {
     const chatContainer = document.getElementById('chat-container');
     chatContainer.innerHTML = ''; // Clear existing messages
@@ -65,7 +73,9 @@ async function fetchDataAndUpdate() {
         // Update the display only if new data is different
         if (JSON.stringify(newData) !== JSON.stringify(currentData)) {
             currentData = newData;
-            displayMessages(newData);
+            const sortOrder = document.getElementById('sortOrder').value;
+            const sortedData = sortData(currentData, sortOrder);
+            displayMessages(sortedData);
         }
     } catch (error) {
         console.error('Error fetching data:', error);
@@ -80,6 +90,13 @@ fetchDataAndUpdate();
 // Set interval to refresh data every 10 seconds (10000 milliseconds)
 setInterval(fetchDataAndUpdate, 10000);
 
+// Event listener for sorting
+document.getElementById('sortOrder').addEventListener('change', () => {
+    const sortOrder = document.getElementById('sortOrder').value;
+    const sortedData = sortData(currentData, sortOrder);
+    displayMessages(sortedData);
+});
+
 // Toggle form visibility
 document.getElementById('toggleFormButton').addEventListener('click', () => {
     const formContainer = document.getElementById('formContainer');
@@ -89,5 +106,3 @@ document.getElementById('toggleFormButton').addEventListener('click', () => {
     } else {
         formContainer.classList.add('hidden');
         document.getElementById('toggleFormButton').textContent = 'Open Form';
-    }
-});
