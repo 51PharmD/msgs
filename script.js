@@ -156,7 +156,7 @@ const imgData = canvas.toDataURL("image/png");
     const fullMessageText = chatWrapper.querySelector('.message').textContent;
     const snippetLength = 100;  // Adjust based on desired snippet size
     const snippetText = fullMessageText.length > snippetLength ? fullMessageText.substring(0, snippetLength) + '...' : fullMessageText;
-    const shareText = `${snippetText} —  رد هنا!\n`; // Arabic text and long dash
+    const shareText = `${snippetText} —  ممكن تكتب رد هنا!\n`; // Arabic text and long dash
 
     const shareLink = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(urlWithoutHash + '#' + messageId)}`;
 
