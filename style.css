@@ -26,7 +26,11 @@ button:hover {
     background-color: #213d53;
 }
 
-.note { font-size: 0.85em; color: #555; margin-bottom: 20px; }
+.note {
+    font-size: 0.85em;
+    color: #555;
+    margin-bottom: 20px;
+}
 
 .hidden {
     display: none;
@@ -35,14 +39,17 @@ button:hover {
 iframe {
     width: 80%;
     height: 300px;
-        text-align: center;
+    text-align: center;
     border: none;
     margin-bottom: 20px;
     margin-left: 10%;
     margin-right: 10%;
 }
 
-.sort-container { margin-bottom: 20px; text-align: center; }
+.sort-container {
+    margin-bottom: 20px;
+    text-align: center;
+}
 
 .chat-container {
     width: 80%;
@@ -54,24 +61,39 @@ iframe {
     margin-bottom: 20px;
 }
 
+.chat-wrapper {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+    background-color: #6b313f;
+padding: 10px 10px 5px 10px; /* Adjusted padding to be smaller at the bottom */
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
 .chat-bubble {
     background-color: #fee4cf;
     border-radius: 20px;
     padding: 15px;
-    margin-bottom: 15px;
     text-align: left;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    position: relative;
     max-width: 80%;
+    min-width: 40%; /* Add a minimum width */
     word-wrap: break-word;
+    position: relative;
+    margin-bottom: 15px;
+    display: flex;
+    flex-direction: column;
+
 }
 
 .timestamp {
     font-size: 0.75em;
     color: #555;
     position: absolute;
+    margin-bottom: 10px; /* Adjust to fit your design */
     top: 10px;
     left: 10px;
+    display: block; /* Ensure it's not hidden */
 }
 
 .message {
@@ -87,3 +109,73 @@ iframe {
     text-align: right;
     margin-top: 5px;
 }
+
+.scroll-button {
+    width: 50px;  /* Adjust size as needed */
+    height: 50px; /* Adjust size as needed */
+    padding: 10px;  /* Optional, for inner padding */
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: #213d53;
+    color: white;
+    border: none;
+    border-radius: 50%;  /* Ensures it's a perfect circle */
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.3);
+    cursor: pointer;
+    z-index: 1000;
+    display: flex;  /* Centering text inside */
+    align-items: center;  /* Centering text inside */
+    justify-content: center;  /* Centering text inside */
+    font-size: 1.5em; /* Increase this value to make the emoji larger */
+}
+
+.scroll-button:hover {
+    background-color: #213d53;
+}
+
+.share-button {
+    background: #213d53;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 5px;
+    cursor: pointer;
+    font-size: 1em;  /* Ensures icon/text is visible */
+}
+
+.share-button:hover {
+    background: #213d53;
+}
+
+.share-options {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    margin-left: 10px;
+}
+
+.highlight {
+    background-color: #f4d03f;  /* Bright yellow highlight */
+    transition: background-color 0.5s ease-in-out;
+}
+
+.emoji-button {
+    background: none;
+    border: none;
+    font-size: 1.5em;  /* Adjust size as needed */
+    cursor: pointer;
+    margin-right: 10px;  /* Space between buttons */
+    transition: transform 0.2s;  /* Add a little animation */
+}
+
+.emoji-button:hover {
+    transform: scale(1.2);  /* Scale up the button on hover */
+}
+
+
+#bottom-of-page {
+    height: 50px; /* Just to ensure it is visible */
+}
+
+

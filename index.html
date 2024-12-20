@@ -8,7 +8,8 @@
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
-        <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 </head>
 <body>
     <h1>✍ ...51 إلى</h1>
@@ -21,7 +22,13 @@
     <h1>💌 الرسائل</h1>
     <p class="note">Messages may take up to 5 min to appear.</p>
     <div id="chat-container" class="chat-container"></div>
+    
+    <!-- Scroll down button -->
+    <button id="scrollToBottomButton" class="scroll-button">📩</button>
 
-<script src="script.js?t=<?=time()?>"></script>
+    <!-- Target element to scroll to -->
+    <div id="bottom-of-page"></div>
+
+    <script src="script.js?t=<?=time()?>"></script>
 </body>
 </html>
