@@ -43,6 +43,12 @@ function parseHtml(html) {
     return data;
 }
 
+// Add this function to detect and convert URLs to links
+function linkify(text) {
+    const urlRegex = /(https?:\/\/[^\s]+)/g;
+    return text.replace(urlRegex, url => `<a href="${url}" target="_blank" rel="noopener noreferrer">${url}</a>`);
+}
+
 function displayMessages(data) {
     const chatContainer = document.getElementById('chat-container');
     chatContainer.innerHTML = ''; // Clear existing messages
@@ -61,7 +67,7 @@ function displayMessages(data) {
 
         const chatMessage = document.createElement('div');
         chatMessage.className = 'message';
-        chatMessage.textContent = entry.message;
+        chatMessage.innerHTML = linkify(entry.message); // Use innerHTML and linkify here
 
         const chatSignature = document.createElement('div');
         chatSignature.className = 'signature';
@@ -146,9 +152,9 @@ async function shareChatBubble(chatWrapper, messageId) {
         return;
     }
 
-// Capture screenshot with background color
-const canvas = await html2canvas(chatWrapper, { backgroundColor: '#e4e0d7' });
-const imgData = canvas.toDataURL("image/png");
+    // Capture screenshot with background color
+    const canvas = await html2canvas(chatWrapper, { backgroundColor: '#e4e0d7' });
+    const imgData = canvas.toDataURL("image/png");
 
     shareButton.style.display = 'block';  // Show share button again
 
