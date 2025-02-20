@@ -60,7 +60,22 @@ function displayMessages(data) {
         chatBubble.className = 'chat-bubble';
         const messageId = `${index + 1}`; // Numeric ID
         chatBubble.id = `message-${messageId}`;
-        
+
+        // Add wire
+        const wire = document.createElement('div');
+        wire.className = 'wire';
+        chatBubble.appendChild(wire);
+
+        // Add Christmas lights container
+        const lightsContainer = document.createElement('div');
+        lightsContainer.className = 'lights';
+        for (let i = 0; i < 8; i++) {
+            const light = document.createElement('div');
+            light.className = 'light';
+            lightsContainer.appendChild(light);
+        }
+        chatBubble.appendChild(lightsContainer);
+
         const chatTimestamp = document.createElement('div');
         chatTimestamp.className = 'timestamp';
         chatTimestamp.textContent = entry.timestamp;
@@ -82,7 +97,7 @@ function displayMessages(data) {
         chatBubble.appendChild(chatTimestamp);
         chatBubble.appendChild(chatMessage);
         chatBubble.appendChild(chatSignature);
-        
+
         chatWrapper.appendChild(chatBubble);
         chatWrapper.appendChild(shareButton);  // Place share button next to the chat bubble
         chatContainer.appendChild(chatWrapper);
