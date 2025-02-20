@@ -10,8 +10,59 @@
     <meta http-equiv="Expires" content="0">
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Cairo', sans-serif;
+        }
+       /* .decoration {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            background-image: url('https://example.com/ramadan-decorations.jpg');
+            background-size: cover;
+            background-repeat: no-repeat;
+            z-index: -1;
+            opacity: 0.8;
+            pointer-events: none;
+        } */
+        .lanterns {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('https://raw.githubusercontent.com/yusufalhelou/msgs/main/51lanterns.png');
+            background-repeat: repeat-x;
+            z-index: 10;
+            animation: floatLanterns 4s ease-in-out infinite;
+            pointer-events: none;
+
+        }
+       /* .colorful-paper {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 100px;
+            background-image: url('https://example.com/ramadan-colorful-paper.png');
+            background-repeat: repeat-x;
+            z-index: 0;
+            pointer-events: none;
+
+        } */
+       @keyframes floatLanterns {
+            0% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+            100% { transform: translateY(0); }
+        }
+    </style>
 </head>
 <body>
+    <div class="decoration"></div>
+    <div class="lanterns"></div>
+    <div class="colorful-paper"></div>
     <h1>✍ ...51 إلى</h1>
     <button id="toggleFormButton">Open Form</button>
     <p class="note">All messages are anonymous. We do not collect any data.</p>
