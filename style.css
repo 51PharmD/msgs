@@ -66,7 +66,7 @@ iframe {
     align-items: center;
     margin-bottom: 15px;
     background-color: #6b313f;
-padding: 10px 10px 5px 10px; /* Adjusted padding to be smaller at the bottom */
+    padding: 10px 10px 5px 10px; /* Adjusted padding to be smaller at the bottom */
     border-radius: 10px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
@@ -83,7 +83,95 @@ padding: 10px 10px 5px 10px; /* Adjusted padding to be smaller at the bottom */
     margin-bottom: 15px;
     display: flex;
     flex-direction: column;
+    overflow: hidden; /* Clip overflowing content */
+}
 
+/* Wire/string for the Christmas lights */
+.chat-bubble .wire {
+    position: absolute;
+    bottom: 10px; /* Position the wire slightly above the bottom */
+    left: 0;
+    width: 100%;
+    height: 2px; /* Thickness of the wire */
+    background-color: #333; /* Color of the wire */
+    z-index: 1; /* Ensure the wire is below the lights */
+}
+
+/* Container for the Christmas lights */
+.chat-bubble .lights {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 20px; /* Height of the lights container */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 10px; /* Add some padding to the sides */
+    z-index: 2; /* Ensure the lights are above the wire */
+    box-sizing: border-box; /* Ensure padding is included in the width */
+}
+
+/* Individual light bulbs */
+.chat-bubble .light {
+    width: 10px; /* Size of the light bulbs */
+    height: 10px;
+    border-radius: 50%; /* Make them perfectly round */
+    background-color: red; /* Default color */
+    animation: flicker 1.5s infinite;
+    position: relative;
+    z-index: 3; /* Ensure the lights are above the wire */
+}
+
+/* Different colors and animation delays for the lights */
+.chat-bubble .light:nth-child(1) {
+    background-color: red;
+    animation-delay: 0s;
+}
+
+.chat-bubble .light:nth-child(2) {
+    background-color: blue;
+    animation-delay: 0.5s;
+}
+
+.chat-bubble .light:nth-child(3) {
+    background-color: green;
+    animation-delay: 1s;
+}
+
+.chat-bubble .light:nth-child(4) {
+    background-color: yellow;
+    animation-delay: 1.5s;
+}
+
+.chat-bubble .light:nth-child(5) {
+    background-color: red;
+    animation-delay: 0.25s;
+}
+
+.chat-bubble .light:nth-child(6) {
+    background-color: blue;
+    animation-delay: 0.75s;
+}
+
+.chat-bubble .light:nth-child(7) {
+    background-color: green;
+    animation-delay: 1.25s;
+}
+
+.chat-bubble .light:nth-child(8) {
+    background-color: yellow;
+    animation-delay: 1.75s;
+}
+
+/* Flickering animation */
+@keyframes flicker {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.5;
+    }
 }
 
 .timestamp {
@@ -173,9 +261,6 @@ padding: 10px 10px 5px 10px; /* Adjusted padding to be smaller at the bottom */
     transform: scale(1.2);  /* Scale up the button on hover */
 }
 
-
 #bottom-of-page {
     height: 50px; /* Just to ensure it is visible */
 }
-
-
