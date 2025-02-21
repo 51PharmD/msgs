@@ -131,8 +131,8 @@ async function fetchDataAndUpdate() {
 // Fetch data initially
 fetchDataAndUpdate();
 
-// Set interval to refresh data every 10 seconds (10000 milliseconds)
-setInterval(fetchDataAndUpdate, 10000);
+// Set interval to refresh data every 30 seconds (30000 milliseconds)
+setInterval(fetchDataAndUpdate, 30000);
 
 // Listen for hash changes to navigate to the specific message
 window.addEventListener('hashchange', scrollToMessage);
