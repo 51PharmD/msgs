@@ -69,6 +69,24 @@ iframe {
     padding: 10px 10px 5px 10px; /* Adjusted padding to be smaller at the bottom */
     border-radius: 10px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    position: relative; /* Ensure the football is positioned relative to the chat-wrapper */
+    overflow: hidden; /* Clip the overflowing part of the football */
+}
+
+/* Football styling */
+.chat-wrapper::after {
+    content: '';
+    position: absolute;
+    bottom: -20px; /* Adjust this value to control how much of the ball is visible */
+    right: -20px; /* Adjust this value to control how much of the ball is visible */
+    width: 60px; /* Size of the football */
+    height: 60px;
+    background-image: url('https://em-content.zobj.net/source/apple/391/soccer-ball_26bd.png'); /* Replace with your football image URL */
+    background-size: cover;
+    background-repeat: no-repeat;
+    z-index: 1; /* Ensure the football is above the chat content */
+    border-radius: 50%; /* Make it round */
+    transform: rotate(15deg); /* Optional: Add a slight rotation for a more dynamic look */
 }
 
 .chat-bubble {
