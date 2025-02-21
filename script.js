@@ -1,5 +1,6 @@
 let isFetching = false;
 let currentData = [];
+let isPollingActive = true; // This will control whether polling is active
 
 // Function to scroll to the specific message
 function scrollToMessage() {
@@ -108,7 +109,7 @@ function displayMessages(data) {
 }
 
 async function fetchDataAndUpdate() {
-    if (isFetching) return;
+    if (isFetching || !isPollingActive) return; // Add polling status check
     isFetching = true;
 
     try {
@@ -132,22 +133,29 @@ async function fetchDataAndUpdate() {
 fetchDataAndUpdate();
 
 // Set interval to refresh data every 30 seconds (30000 milliseconds)
-setInterval(fetchDataAndUpdate, 30000);
+setInterval(() => {
+    if (isPollingActive) {
+        fetchDataAndUpdate();
+    }
+}, 30000);
 
-// Listen for hash changes to navigate to the specific message
-window.addEventListener('hashchange', scrollToMessage);
-
-// Toggle form visibility
+// Toggle form visibility (updated)
 document.getElementById('toggleFormButton').addEventListener('click', () => {
     const formContainer = document.getElementById('formContainer');
     if (formContainer.classList.contains('hidden')) {
         formContainer.classList.remove('hidden');
         document.getElementById('toggleFormButton').textContent = 'Close Form';
+        isPollingActive = false; // Pause polling
     } else {
         formContainer.classList.add('hidden');
         document.getElementById('toggleFormButton').textContent = 'Open Form';
+        isPollingActive = true; // Resume polling
+        fetchDataAndUpdate(); // Immediately fetch data when resuming
     }
 });
+
+// Listen for hash changes to navigate to the specific message
+window.addEventListener('hashchange', scrollToMessage);
 
 // Add scroll event
 document.getElementById('scrollToBottomButton').addEventListener('click', () => {
