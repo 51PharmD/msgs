@@ -77,7 +77,7 @@ iframe {
 .chat-wrapper::after {
     content: '';
     position: absolute;
-    bottom: -10px; /* Adjust this value to control how much of the ball is visible */
+    bottom: 0px; /* Adjust this value to control how much of the ball is visible */
     right: 0px; /* Adjust this value to control how much of the ball is visible */
     width: 60px; /* Size of the football */
     height: 60px;
