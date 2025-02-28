@@ -81,7 +81,7 @@ iframe {
     right: -20px; /* Adjust this value to control how much of the ball is visible */
     width: 60px; /* Size of the football */
     height: 60px;
-    background-image: url('https://em-content.zobj.net/source/apple/391/soccer-ball_26bd.png'); /* Replace with your football image URL */
+    background-image: url('https://emoji.aranja.com/static/emoji-data/img-apple-160/1f319.png'); /* Replace with your football image URL */
     background-size: cover;
     background-repeat: no-repeat;
     z-index: 1; /* Ensure the football is above the chat content */
