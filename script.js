@@ -155,12 +155,21 @@ document.getElementById('toggleFormButton').addEventListener('click', () => {
     if (formContainer.classList.contains('hidden')) {
         formContainer.classList.remove('hidden');
         document.getElementById('toggleFormButton').textContent = 'Close Form';
-        isPollingActive = false; // Pause polling
+        
+        // Pause polling only if it was active
+        if (isPollingActive) {
+            isPollingActive = false;
+        }
     } else {
         formContainer.classList.add('hidden');
         document.getElementById('toggleFormButton').textContent = 'Open Form';
-        isPollingActive = true; // Resume polling
-        fetchDataAndUpdate(); // Immediately fetch data when resuming
+        
+        // Resume polling only if it was active before
+        if (pollingInterval !== null) {
+            isPollingActive = true;
+            fetchDataAndUpdate(); // Immediately fetch data when resuming
+
+        }
     }
 });
 
