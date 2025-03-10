@@ -282,6 +282,27 @@ iframe {
 /* Add to style.css */
 .load-messages-button {
     padding: 12px 25px;
+    background-color: #7a3a4a; /* Use the hover color directly */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-family: 'Cairo', sans-serif;
+    font-size: 1.1em;
+    margin: 20px auto;
+    display: block;
+    transform: scale(1.05); /* Apply hover transform directly */
+    transition: none; /* Remove transition if you don't want animations */
+}
+
+/* Remove the hover effect since it's always applied */
+.load-messages-button:hover {
+    background-color: #7a3a4a; /* Same as default */
+    transform: scale(1.05); /* Same as default */
+}
+
+/* .load-messages-button {
+    padding: 12px 25px;
     background-color: #6B313F;
     color: white;
     border: none;
@@ -298,6 +319,8 @@ iframe {
     transform: scale(1.05);
     background-color: #7a3a4a;
 }
+*/
+
 
 #bottom-of-page {
     height: 50px; /* Just to ensure it is visible */
