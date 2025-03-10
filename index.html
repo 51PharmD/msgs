@@ -16,17 +16,6 @@
             padding: 0;
             font-family: 'Cairo', sans-serif;
         }
-       /* .decoration {
-            position: fixed;
-            width: 100%;
-            height: 100%;
-            background-image: url('https://example.com/ramadan-decorations.jpg');
-            background-size: cover;
-            background-repeat: no-repeat;
-            z-index: -1;
-            opacity: 0.8;
-            pointer-events: none;
-        } */
         .lanterns {
             position: fixed;
             top: 0;
@@ -38,21 +27,8 @@
             z-index: 10;
             animation: floatLanterns 4s ease-in-out infinite;
             pointer-events: none;
-
         }
-       /* .colorful-paper {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            height: 100px;
-            background-image: url('https://example.com/ramadan-colorful-paper.png');
-            background-repeat: repeat-x;
-            z-index: 0;
-            pointer-events: none;
-
-        } */
-       @keyframes floatLanterns {
+        @keyframes floatLanterns {
             0% { transform: translateY(0); }
             50% { transform: translateY(-20px); }
             100% { transform: translateY(0); }
@@ -72,7 +48,9 @@
     
     <h1>💌 الرسائل</h1>
     <p class="note">Messages may take up to 5 min to appear.</p>
-    <div id="chat-container" class="chat-container"></div>
+    <div id="chat-container" class="chat-container">
+        <button id="loadMessagesBtn" class="load-messages-button">عرض الرسائل</button>
+    </div>
     
     <!-- Scroll down button -->
     <button id="scrollToBottomButton" class="scroll-button">📩</button>
