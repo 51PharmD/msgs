@@ -279,6 +279,26 @@ iframe {
     transform: scale(1.2);  /* Scale up the button on hover */
 }
 
+/* Add to style.css */
+.load-messages-button {
+    padding: 12px 25px;
+    background-color: #6B313F;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-family: 'Cairo', sans-serif;
+    font-size: 1.1em;
+    margin: 20px auto;
+    display: block;
+    transition: transform 0.2s;
+}
+
+.load-messages-button:hover {
+    transform: scale(1.05);
+    background-color: #7a3a4a;
+}
+
 #bottom-of-page {
     height: 50px; /* Just to ensure it is visible */
 }
