@@ -1,6 +1,7 @@
 let isFetching = false;
 let currentData = [];
-let isPollingActive = true; // This will control whether polling is active
+let isPollingActive = false; // Start with polling inactive
+let pollingInterval = null;
 
 // Function to scroll to the specific message
 function scrollToMessage() {
@@ -129,15 +130,24 @@ async function fetchDataAndUpdate() {
     }
 }
 
-// Fetch data initially
-fetchDataAndUpdate();
-
-// Set interval to refresh data every 30 seconds (30000 milliseconds)
-setInterval(() => {
-    if (isPollingActive) {
-        fetchDataAndUpdate();
-    }
-}, 30000);
+// Add event listener for the load messages button
+document.getElementById('loadMessagesBtn').addEventListener('click', function() {
+    // Hide the button
+    this.style.display = 'none';
+    
+    // Start polling
+    isPollingActive = true;
+    
+    // Initial fetch
+    fetchDataAndUpdate();
+    
+    // Set up interval
+    pollingInterval = setInterval(() => {
+        if (isPollingActive) {
+            fetchDataAndUpdate();
+        }
+    }, 30000);
+});
 
 // Toggle form visibility (updated)
 document.getElementById('toggleFormButton').addEventListener('click', () => {
