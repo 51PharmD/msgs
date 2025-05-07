@@ -89,6 +89,7 @@ iframe {
     transform: rotate(0deg); /* Optional: Add a slight rotation for a more dynamic look */
 }
 
+
 .chat-bubble {
     background-color: #fee4cf;
     border-radius: 20px;
@@ -104,6 +105,7 @@ iframe {
     overflow: hidden; /* Clip overflowing content */
 }
 
+.chat-wrapper::after,
 .chat-bubble .wire,
 .chat-bubble .lights,
 .chat-bubble .light {
