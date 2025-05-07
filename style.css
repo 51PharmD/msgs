@@ -74,7 +74,7 @@ iframe {
 }
 
 /* Football styling */
-.chat-wrapper::after {
+/* .chat-wrapper::after {
     content: '';
     position: absolute;
     bottom: 0px; /* Adjust this value to control how much of the ball is visible */
@@ -87,7 +87,7 @@ iframe {
     z-index: 1; /* Ensure the football is above the chat content */
     border-radius: 50%; /* Make it round */
     transform: rotate(0deg); /* Optional: Add a slight rotation for a more dynamic look */
-}
+} */
 
 .chat-bubble {
     background-color: #fee4cf;
@@ -105,7 +105,7 @@ iframe {
 }
 
 /* Wire/string for the Christmas lights */
-.chat-bubble .wire {
+/* .chat-bubble .wire {
     position: absolute;
     bottom: 10px; /* Position the wire slightly above the bottom */
     left: 0;
@@ -190,7 +190,7 @@ iframe {
     50% {
         opacity: 0.5;
     }
-}
+} */
 
 .timestamp {
     font-size: 0.75em;
