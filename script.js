@@ -1,31 +1,27 @@
 let isFetching = false;
 let currentData = [];
-let isPollingActive = false; // Start with polling inactive
+let isPollingActive = false;
 let pollingInterval = null;
 
 // Function to scroll to the specific message
 function scrollToMessage() {
-    const hash = window.location.hash.substring(1); // Get the hash without the #
+    const hash = window.location.hash.substring(1);
     if (hash) {
         const messageElement = document.getElementById(`message-${hash}`);
         if (messageElement) {
             messageElement.scrollIntoView({ behavior: 'smooth' });
-            // Add highlight class to the message
             messageElement.classList.add('highlight');
-            // Remove the highlight class after 2 seconds
             setTimeout(() => {
                 messageElement.classList.remove('highlight');
-            }, 2000); // Adjust the duration as needed
+            }, 2000);
         }
     }
 }
 
 async function fetchHtmlContent(pubhtmlUrl) {
-    // Add a timestamp to the URL to prevent caching
     const urlWithTimestamp = `${pubhtmlUrl}?t=${new Date().getTime()}`;
     const response = await fetch(urlWithTimestamp);
-    const html = await response.text();
-    return html;
+    return await response.text();
 }
 
 function parseHtml(html) {
@@ -33,7 +29,7 @@ function parseHtml(html) {
     const doc = parser.parseFromString(html, 'text/html');
     const rows = doc.querySelectorAll('table tr');
     
-    const data = Array.from(rows).slice(1).map(row => {
+    return Array.from(rows).slice(1).map(row => {
         const cells = row.querySelectorAll('td');
         return {
             timestamp: cells[0]?.innerText.trim() || '',
@@ -41,11 +37,8 @@ function parseHtml(html) {
             signature: cells[2]?.innerText.trim() || ''
         };
     });
-
-    return data;
 }
 
-// Add this function to detect and convert URLs to links
 function linkify(text) {
     const urlRegex = /(https?:\/\/[^\s]+)/g;
     return text.replace(urlRegex, url => `<a href="${url}" target="_blank" rel="noopener noreferrer">${url}</a>`);
@@ -53,22 +46,20 @@ function linkify(text) {
 
 function displayMessages(data) {
     const chatContainer = document.getElementById('chat-container');
-    chatContainer.innerHTML = ''; // Clear existing messages
+    chatContainer.innerHTML = '';
     data.forEach((entry, index) => {
         const chatWrapper = document.createElement('div');
-        chatWrapper.className = 'chat-wrapper';  // Add wrapper for styling
+        chatWrapper.className = 'chat-wrapper';
 
         const chatBubble = document.createElement('div');
         chatBubble.className = 'chat-bubble';
-        const messageId = `${index + 1}`; // Numeric ID
+        const messageId = `${index + 1}`;
         chatBubble.id = `message-${messageId}`;
 
-        // Add wire
         const wire = document.createElement('div');
         wire.className = 'wire';
         chatBubble.appendChild(wire);
 
-        // Add Christmas lights container
         const lightsContainer = document.createElement('div');
         lightsContainer.className = 'lights';
         for (let i = 0; i < 8; i++) {
@@ -84,13 +75,12 @@ function displayMessages(data) {
 
         const chatMessage = document.createElement('div');
         chatMessage.className = 'message';
-        chatMessage.innerHTML = linkify(entry.message); // Use innerHTML and linkify here
+        chatMessage.innerHTML = linkify(entry.message);
 
         const chatSignature = document.createElement('div');
         chatSignature.className = 'signature';
         chatSignature.textContent = `- ${entry.signature}`;
 
-        // Create share button
         const shareButton = document.createElement('button');
         shareButton.className = 'share-button';
         shareButton.innerHTML = '🔗';
@@ -101,16 +91,15 @@ function displayMessages(data) {
         chatBubble.appendChild(chatSignature);
 
         chatWrapper.appendChild(chatBubble);
-        chatWrapper.appendChild(shareButton);  // Place share button next to the chat bubble
+        chatWrapper.appendChild(shareButton);
         chatContainer.appendChild(chatWrapper);
     });
 
-    // Scroll to the message if URL hash is present
     scrollToMessage();
 }
 
 async function fetchDataAndUpdate() {
-    if (isFetching || !isPollingActive) return; // Add polling status check
+    if (isFetching || !isPollingActive) return;
     isFetching = true;
 
     try {
@@ -118,7 +107,6 @@ async function fetchDataAndUpdate() {
         const html = await fetchHtmlContent(pubhtmlUrl);
         const newData = parseHtml(html);
         
-        // Update the display only if new data is different
         if (JSON.stringify(newData) !== JSON.stringify(currentData)) {
             currentData = newData;
             displayMessages(newData);
@@ -130,18 +118,11 @@ async function fetchDataAndUpdate() {
     }
 }
 
-// Add event listener for the load messages button
+// Load Messages Button
 document.getElementById('loadMessagesBtn').addEventListener('click', function() {
-    // Hide the button
     this.style.display = 'none';
-    
-    // Start polling
     isPollingActive = true;
-    
-    // Initial fetch
     fetchDataAndUpdate();
-    
-    // Set up interval
     pollingInterval = setInterval(() => {
         if (isPollingActive) {
             fetchDataAndUpdate();
@@ -149,44 +130,69 @@ document.getElementById('loadMessagesBtn').addEventListener('click', function() 
     }, 30000);
 });
 
-// Toggle form visibility (updated)
+// Form Toggle
 document.getElementById('toggleFormButton').addEventListener('click', () => {
     const formContainer = document.getElementById('formContainer');
+    const cloudWindow = document.getElementById('cloudWindow');
+    
     if (formContainer.classList.contains('hidden')) {
         formContainer.classList.remove('hidden');
         document.getElementById('toggleFormButton').textContent = 'Close Form';
-        
-        // Pause polling only if it was active
-        if (isPollingActive) {
-            isPollingActive = false;
+        if (!cloudWindow.classList.contains('hidden')) {
+            cloudWindow.classList.add('hidden');
+            document.getElementById('toggleCloudButton').textContent = 'Enter The Cloud';
         }
+        isPollingActive = false;
     } else {
         formContainer.classList.add('hidden');
         document.getElementById('toggleFormButton').textContent = 'Open Form';
-        
-        // Resume polling only if it was active before
         if (pollingInterval !== null) {
             isPollingActive = true;
-            fetchDataAndUpdate(); // Immediately fetch data when resuming
-
+            fetchDataAndUpdate();
         }
     }
 });
 
-// Listen for hash changes to navigate to the specific message
+// Cloud Toggle
+document.getElementById('toggleCloudButton').addEventListener('click', () => {
+    const cloudWindow = document.getElementById('cloudWindow');
+    const formContainer = document.getElementById('formContainer');
+    
+    // Toggle cloud window
+    cloudWindow.classList.toggle('hidden');
+    
+    // Update button text
+    document.getElementById('toggleCloudButton').textContent = 
+        cloudWindow.classList.contains('hidden') ? 'Enter The Cloud' : 'Exit The Cloud';
+    
+    // Control polling - ONLY pause when cloud is open
+    if (!cloudWindow.classList.contains('hidden')) {
+        // Close form if open
+        if (!formContainer.classList.contains('hidden')) {
+            formContainer.classList.add('hidden');
+            document.getElementById('toggleFormButton').textContent = 'Open Form';
+        }
+        // Pause polling
+        isPollingActive = false;
+    } else {
+        // Only resume polling if it was active before
+        if (pollingInterval !== null) {
+            isPollingActive = true;
+        }
+    }
+});
+
+// Other Event Listeners
 window.addEventListener('hashchange', scrollToMessage);
 
-// Add scroll event
 document.getElementById('scrollToBottomButton').addEventListener('click', () => {
     document.getElementById('bottom-of-page').scrollIntoView({ behavior: 'smooth' });
 });
 
-// Function to share chat bubble
 async function shareChatBubble(chatWrapper, messageId) {
     const shareButton = chatWrapper.querySelector('.share-button');
-    shareButton.style.display = 'none';  // Hide share button
+    shareButton.style.display = 'none';
 
-    // Check if options already exist, remove them if they do
     const existingOptions = chatWrapper.querySelector('.share-options');
     if (existingOptions) {
         chatWrapper.removeChild(existingOptions);
@@ -194,24 +200,21 @@ async function shareChatBubble(chatWrapper, messageId) {
         return;
     }
 
-    // Capture screenshot with background color
     const canvas = await html2canvas(chatWrapper, { backgroundColor: '#e4e0d7' });
     const imgData = canvas.toDataURL("image/png");
-
-    shareButton.style.display = 'block';  // Show share button again
+    shareButton.style.display = 'block';
 
     const urlWithoutHash = window.location.href.split('#')[0];
     const fullMessageText = chatWrapper.querySelector('.message').textContent;
-    const snippetLength = 100;  // Adjust based on desired snippet size
+    const snippetLength = 100;
     const snippetText = fullMessageText.length > snippetLength ? fullMessageText.substring(0, snippetLength) + '...' : fullMessageText;
-    const shareText = `${snippetText} —  ممكن تكتب رد هنا!\n`; // Arabic text and long dash
+    const shareText = `${snippetText} —  ممكن تكتب رد هنا!\n`;
 
     const shareLink = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(urlWithoutHash + '#' + messageId)}`;
 
-    // Create download button with photo emoji 📸
     const downloadButton = document.createElement('button');
     downloadButton.className = 'emoji-button';
-    downloadButton.innerHTML = '📸';  // Photo emoji
+    downloadButton.innerHTML = '📸';
     downloadButton.addEventListener('click', () => {
         const link = document.createElement('a');
         link.href = imgData;
@@ -219,10 +222,9 @@ async function shareChatBubble(chatWrapper, messageId) {
         link.click();
     });
 
-    // Create share button with Twitter emoji 🐦
     const twitterButton = document.createElement('button');
     twitterButton.className = 'emoji-button';
-    twitterButton.innerHTML = '🐦';  // Twitter emoji
+    twitterButton.innerHTML = '🐦';
     twitterButton.addEventListener('click', () => {
         const link = document.createElement('a');
         link.href = shareLink;
@@ -230,9 +232,8 @@ async function shareChatBubble(chatWrapper, messageId) {
         link.click();
     });
 
-    // Display options
     const optionsContainer = document.createElement('div');
-    optionsContainer.className = 'share-options';  // Add class for styling
+    optionsContainer.className = 'share-options';
     optionsContainer.appendChild(downloadButton);
     optionsContainer.appendChild(twitterButton);
 

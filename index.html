@@ -15,24 +15,8 @@
             margin: 0;
             padding: 0;
             font-family: 'Cairo', sans-serif;
+            overflow-x: hidden;
         }
-        /* .lanterns {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-image: url('https://raw.githubusercontent.com/yusufalhelou/msgs/main/51lanterns.png');
-            background-repeat: repeat-x;
-            z-index: 10;
-            animation: floatLanterns 4s ease-in-out infinite;
-            pointer-events: none;
-        }
-        @keyframes floatLanterns {
-            0% { transform: translateY(0); }
-            50% { transform: translateY(-20px); }
-            100% { transform: translateY(0); }
-        } */
     </style>
 </head>
 <body>
@@ -52,12 +36,21 @@
         <button id="loadMessagesBtn" class="load-messages-button">عرض الرسائل</button>
     </div>
     
+    <h1>☁️ The Cloud</h1>
+    <p class="note">51's collective mind.</p>
+    <div class="cloud-container">
+        <button id="toggleCloudButton" class="load-messages-button blue-version">Enter The Cloud</button>
+        <div id="cloudWindow" class="hidden">
+            <iframe src="https://51pharmd.github.io/cloud" class="cloud-iframe"></iframe>
+        </div>
+    </div>
+    
     <!-- Scroll down button -->
     <button id="scrollToBottomButton" class="scroll-button">📩</button>
 
     <!-- Target element to scroll to -->
     <div id="bottom-of-page"></div>
 
-    <script src="script.js?t=<?=time()?>"></script>
+    <script src="script.js"></script>
 </body>
 </html>
