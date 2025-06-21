@@ -389,3 +389,28 @@ iframe {
     transform: translateY(-2px);
     box-shadow: 2px 5px 10px rgba(0,0,0,0.3);
 }
+
+.signature-image {
+    position: absolute;
+    bottom: 0px;
+    left: 0px;
+    width: 80px; /* Adjust as needed */
+    height: auto;
+    opacity: 1;
+    z-index: 999;
+
+   /* Key fix - remove background/border that creates square */
+    background: none !important;
+    border: none !important;
+    padding: 0 !important;
+    border-radius: 0 !important;
+    
+    /* Enhanced visibility for transparent PNG */
+    filter: 
+        drop-shadow(0 1px 1px rgb(255 255 255)) /* Blue shadow matching your theme */
+        drop-shadow(0 2px 1px rgb(255 201 82)); /* Red shadow matching your theme */
+    
+    /* Ink-like effect */
+    mix-blend-mode: multiply;
+   
+}
