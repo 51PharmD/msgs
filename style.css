@@ -395,25 +395,28 @@ iframe {
     position: absolute;
     bottom: 0px;
     left: 0px;
-    width: 80px; /* Adjust as needed */
+    width: 80px;
     height: auto;
     opacity: 1;
     z-index: 999;
-
-   /* Key fix - remove background/border that creates square */
     background: none !important;
     border: none !important;
     padding: 0 !important;
     border-radius: 0 !important;
     
-    /* Enhanced visibility for transparent PNG */
-    filter: 
-        drop-shadow(0 1px 1px rgb(255 255 255)) /* Blue shadow matching your theme */
-        drop-shadow(0 2px 1px rgb(255 201 82)); /* Red shadow matching your theme */
+    /* Replace CSS filter with SVG filter (works in html2canvas) */
+    filter: url('data:image/svg+xml,\
+        <svg xmlns="http://www.w3.org/2000/svg">\
+            <filter id="sig-filter" x="-20%" y="-20%" width="140%" height="140%">\
+                <feDropShadow dx="0" dy="1" stdDeviation="0.5" flood-color="white" flood-opacity="1"/>\
+                <feDropShadow dx="0" dy="2" stdDeviation="0.5" flood-color="%23ffc952" flood-opacity="1"/>\
+            </filter>\
+        </svg>#sig-filter');
     
-    /* Ink-like effect */
+/* Ink-like effect */
     mix-blend-mode: multiply;
-   
+
+    transform: translateZ(0); /* Force GPU rendering */
 }
 
 .filter-container {
