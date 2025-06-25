@@ -101,7 +101,7 @@ iframe {
     margin-bottom: 15px;
     display: flex;
     flex-direction: column;
-    overflow: hidden;
+    overflow: visible; /* Let things stick out */;
 }
 
 .chat-wrapper::after,
@@ -442,4 +442,18 @@ iframe {
 .filter-button.active {
     background-color: #213d53;
     font-weight: bold;
+}
+
+/* Pin indicator for pinned messages */
+.pin-indicator {
+    position: absolute;
+    top: -10px; /* Half outside the bubble */
+    right: -5px;
+    font-size: 24px;
+    transform: rotate(15deg);
+    text-shadow: 
+        1px 1px 0 #fff, 
+        -1px -1px 0 #fff;
+    z-index: 1000;
+    pointer-events: none; /* Prevent interaction */
 }
