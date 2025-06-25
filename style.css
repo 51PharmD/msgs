@@ -391,6 +391,7 @@ iframe {
 }
 
 .signature-image {
+    display: none; /* hidden by default */
     position: absolute;
     bottom: 0px;
     left: 0px;
