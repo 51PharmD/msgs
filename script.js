@@ -1,23 +1,58 @@
 // Base64 Image Converter (Run once on load)
-let base64Signature; // Global variable to store the result
+let base64SignatureWithEffects; // Stores final processed image
 
 async function prepareSignature() {
     const imgUrl = 'https://raw.githubusercontent.com/51PharmD/msgs/refs/heads/main/YusufAlhelou.png';
+    
     try {
+        // 1. Load original image
         const response = await fetch(imgUrl);
         const blob = await response.blob();
-        base64Signature = await new Promise((resolve) => {
+        const originalBase64 = await new Promise(resolve => {
             const reader = new FileReader();
             reader.onloadend = () => resolve(reader.result);
             reader.readAsDataURL(blob);
         });
+
+        // 2. Apply effects programmatically
+        base64SignatureWithEffects = await applyEffects(originalBase64);
     } catch (error) {
-        console.error("Failed to load signature:", error);
+        console.error("Signature processing failed:", error);
+        base64SignatureWithEffects = null;
     }
 }
 
-// Initialize when page loads
+async function applyEffects(base64) {
+    return new Promise(resolve => {
+        const img = new Image();
+        img.src = base64;
+        
+        img.onload = () => {
+            const canvas = document.createElement('canvas');
+            canvas.width = img.width;
+            canvas.height = img.height;
+            const ctx = canvas.getContext('2d');
+            
+            // 1. Draw original image
+            ctx.drawImage(img, 0, 0);
+            
+            // 2. Apply glow effect (direct pixel manipulation)
+            const glowColor = 'rgba(255, 201, 82, 0.7)'; // Gold glow
+            ctx.shadowColor = glowColor;
+            ctx.shadowBlur = 10;
+            ctx.shadowOffsetX = 0;
+            ctx.shadowOffsetY = 0;
+            ctx.drawImage(img, 0, 0); // Re-draw with shadow
+            
+            // 3. Convert back to base64
+            resolve(canvas.toDataURL());
+        };
+    });
+}
+
+// Initialize
 prepareSignature();
+
 
 let isFetching = false;
 let currentData = [];
@@ -144,13 +179,11 @@ function displayMessages(data) {
         chatSignature.className = 'signature';
         chatSignature.textContent = `- ${entry.signature}`;
 
-       // Add signature image if ⚡ is found in the tag column
-if (entry.tag?.includes('⚡') && base64Signature) {
+      if (entry.tag?.includes('⚡') && base64SignatureWithEffects) {
     const signatureImg = document.createElement('img');
-    signatureImg.src = base64Signature;
+    signatureImg.src = base64SignatureWithEffects; // Use pre-rendered image
     signatureImg.className = 'signature-image';
     signatureImg.style.display = 'block';
-    signatureImg.alt = 'Yusuf Alhelou';
     chatBubble.appendChild(signatureImg);
 }
 
