@@ -414,3 +414,31 @@ iframe {
     mix-blend-mode: multiply;
    
 }
+
+.filter-container {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin-bottom: 15px;
+    width: 100%;
+}
+
+.filter-button {
+    padding: 8px 15px;
+    background-color: #7a3a4a;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-family: 'Cairo', sans-serif;
+    transition: all 0.2s;
+}
+
+.filter-button:hover {
+    background-color: #8a4a5a;
+}
+
+.filter-button.active {
+    background-color: #213d53;
+    font-weight: bold;
+}
