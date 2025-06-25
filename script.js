@@ -1,54 +1,22 @@
-// Base64 Image Converter with Effects
-let base64SignatureWithEffects; // Renamed for clarity
+// Base64 Image Converter (Run once on load)
+let base64Signature; // Global variable to store the result
 
 async function prepareSignature() {
     const imgUrl = 'https://raw.githubusercontent.com/51PharmD/msgs/refs/heads/main/YusufAlhelou.png';
-    
     try {
-        // 1. Fetch original image
         const response = await fetch(imgUrl);
         const blob = await response.blob();
-        const originalBase64 = await new Promise(resolve => {
+        base64Signature = await new Promise((resolve) => {
             const reader = new FileReader();
             reader.onloadend = () => resolve(reader.result);
             reader.readAsDataURL(blob);
         });
-
-        // 2. Apply effects
-        base64SignatureWithEffects = await applyEffects(originalBase64);
     } catch (error) {
-        console.error("Signature processing failed:", error);
-        // Fallback to original if needed
-        base64SignatureWithEffects = imgUrl;
+        console.error("Failed to load signature:", error);
     }
 }
 
-async function applyEffects(base64) {
-    return new Promise(resolve => {
-        const img = new Image();
-        img.src = base64;
-        
-        img.onload = () => {
-            const canvas = document.createElement('canvas');
-            canvas.width = img.width + 20; // Extra space for glow
-            canvas.height = img.height + 20;
-            const ctx = canvas.getContext('2d');
-            
-            // 1. Apply glow
-            ctx.shadowColor = 'rgba(255, 201, 82, 0.7)';
-            ctx.shadowBlur = 10;
-            ctx.drawImage(img, 10, 10); // Centered with glow margin
-            
-            // 2. Draw original image again (sharp center)
-            ctx.shadowBlur = 0;
-            ctx.drawImage(img, 10, 10);
-            
-            resolve(canvas.toDataURL());
-        };
-    });
-}
-
-// Initialize (single call)
+// Initialize when page loads
 prepareSignature();
 
 let isFetching = false;
@@ -176,11 +144,13 @@ function displayMessages(data) {
         chatSignature.className = 'signature';
         chatSignature.textContent = `- ${entry.signature}`;
 
-      if (entry.tag?.includes('⚡') && base64SignatureWithEffects) {
+       // Add signature image if ⚡ is found in the tag column
+if (entry.tag?.includes('⚡') && base64Signature) {
     const signatureImg = document.createElement('img');
-    signatureImg.src = base64SignatureWithEffects; // Use pre-rendered image
+    signatureImg.src = base64Signature;
     signatureImg.className = 'signature-image';
     signatureImg.style.display = 'block';
+    signatureImg.alt = 'Yusuf Alhelou';
     chatBubble.appendChild(signatureImg);
 }
 
