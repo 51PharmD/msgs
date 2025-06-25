@@ -48,12 +48,16 @@ function linkify(text) {
 
 // Added filter function
 function filterMessages(data) {
-    if (currentFilter === 'all') {
-        return data;
-    } else if (currentFilter === 'pinned') {
-        return data.filter(entry => entry.tag && entry.tag.includes('📌'));
+    switch(currentFilter) {
+        case 'all':
+            return data;
+        case 'pinned':
+            return data.filter(entry => entry.tag && entry.tag.includes('📌'));
+        case 'latest':
+            return data.slice(-5).reverse(); // Get last 5 and reverse to show newest first
+        default:
+            return data;
     }
-    return data;
 }
 
 function displayMessages(data) {
