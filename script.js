@@ -1,11 +1,11 @@
-// Base64 Image Converter (Run once on load)
-let base64SignatureWithEffects; // Stores final processed image
+// Base64 Image Converter with Effects
+let base64SignatureWithEffects; // Renamed for clarity
 
 async function prepareSignature() {
     const imgUrl = 'https://raw.githubusercontent.com/51PharmD/msgs/refs/heads/main/YusufAlhelou.png';
     
     try {
-        // 1. Load original image
+        // 1. Fetch original image
         const response = await fetch(imgUrl);
         const blob = await response.blob();
         const originalBase64 = await new Promise(resolve => {
@@ -14,11 +14,12 @@ async function prepareSignature() {
             reader.readAsDataURL(blob);
         });
 
-        // 2. Apply effects programmatically
+        // 2. Apply effects
         base64SignatureWithEffects = await applyEffects(originalBase64);
     } catch (error) {
         console.error("Signature processing failed:", error);
-        base64SignatureWithEffects = null;
+        // Fallback to original if needed
+        base64SignatureWithEffects = imgUrl;
     }
 }
 
@@ -29,30 +30,26 @@ async function applyEffects(base64) {
         
         img.onload = () => {
             const canvas = document.createElement('canvas');
-            canvas.width = img.width;
-            canvas.height = img.height;
+            canvas.width = img.width + 20; // Extra space for glow
+            canvas.height = img.height + 20;
             const ctx = canvas.getContext('2d');
             
-            // 1. Draw original image
-            ctx.drawImage(img, 0, 0);
-            
-            // 2. Apply glow effect (direct pixel manipulation)
-            const glowColor = 'rgba(255, 201, 82, 0.7)'; // Gold glow
-            ctx.shadowColor = glowColor;
+            // 1. Apply glow
+            ctx.shadowColor = 'rgba(255, 201, 82, 0.7)';
             ctx.shadowBlur = 10;
-            ctx.shadowOffsetX = 0;
-            ctx.shadowOffsetY = 0;
-            ctx.drawImage(img, 0, 0); // Re-draw with shadow
+            ctx.drawImage(img, 10, 10); // Centered with glow margin
             
-            // 3. Convert back to base64
+            // 2. Draw original image again (sharp center)
+            ctx.shadowBlur = 0;
+            ctx.drawImage(img, 10, 10);
+            
             resolve(canvas.toDataURL());
         };
     });
 }
 
-// Initialize
+// Initialize (single call)
 prepareSignature();
-
 
 let isFetching = false;
 let currentData = [];
