@@ -433,6 +433,14 @@ iframe {
     cursor: pointer;
     font-family: 'Cairo', sans-serif;
     transition: all 0.2s;
+  min-width: 120px; /* Ensure consistent width */
+    text-align: center;
+}
+
+/* Style for the counter */
+.filter-button span {
+    font-size: 0.8em;
+    margin-left: 4px;
 }
 
 .filter-button:hover {
