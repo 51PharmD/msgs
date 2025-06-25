@@ -64,9 +64,21 @@ function displayMessages(data) {
     const chatContainer = document.getElementById('chat-container');
     chatContainer.innerHTML = '';
     
-    // Apply current filter
+    // Apply current filter FIRST (to use original data order for counting)
     const filteredData = filterMessages(data);
     
+    // Count pinned messages from UNFILTERED data (accurate count)
+    const pinnedCount = data.filter(entry => entry.tag?.includes('📌')).length;
+    
+    // Update pinned button text if button exists
+    const pinnedButton = document.querySelector('[data-filter="pinned"]');
+    if (pinnedButton) {
+        pinnedButton.textContent = pinnedCount > 0 
+            ? `Pinned 📌 [${pinnedCount}]` 
+            : 'Pinned 📌'; // Only show number if > 0
+    }
+    
+    // Create messages
     filteredData.forEach((entry, index) => {
         const chatWrapper = document.createElement('div');
         chatWrapper.className = 'chat-wrapper';
@@ -76,13 +88,13 @@ function displayMessages(data) {
         const messageId = `${index + 1}`;
         chatBubble.id = `message-${messageId}`;
 
-// Pin Indicator
-if (entry.tag?.includes('📌')) {
-    const pin = document.createElement('div');
-    pin.className = 'pin-indicator';
-    pin.textContent = '📌';
-    chatBubble.appendChild(pin);
-}
+        // Add pin indicator (only for pinned messages)
+        if (entry.tag?.includes('📌')) {
+            const pin = document.createElement('div');
+            pin.className = 'pin-indicator';
+            pin.textContent = '📌';
+            chatBubble.appendChild(pin);
+        }
         
         // Add wire and lights decoration
         const wire = document.createElement('div');
