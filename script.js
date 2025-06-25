@@ -76,6 +76,14 @@ function displayMessages(data) {
         const messageId = `${index + 1}`;
         chatBubble.id = `message-${messageId}`;
 
+// Pin Indicator
+if (entry.tag?.includes('📌')) {
+    const pin = document.createElement('div');
+    pin.className = 'pin-indicator';
+    pin.textContent = '📌';
+    chatBubble.appendChild(pin);
+}
+        
         // Add wire and lights decoration
         const wire = document.createElement('div');
         wire.className = 'wire';
