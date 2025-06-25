@@ -2,6 +2,7 @@ let isFetching = false;
 let currentData = [];
 let isPollingActive = false;
 let pollingInterval = null;
+let currentFilter = 'all'; // Added filter state
 
 // Function to scroll to the specific message
 function scrollToMessage() {
@@ -45,10 +46,24 @@ function linkify(text) {
     return text.replace(urlRegex, url => `<a href="${url}" target="_blank" rel="noopener noreferrer">${url}</a>`);
 }
 
+// Added filter function
+function filterMessages(data) {
+    if (currentFilter === 'all') {
+        return data;
+    } else if (currentFilter === 'pinned') {
+        return data.filter(entry => entry.tag && entry.tag.includes('📌'));
+    }
+    return data;
+}
+
 function displayMessages(data) {
     const chatContainer = document.getElementById('chat-container');
     chatContainer.innerHTML = '';
-    data.forEach((entry, index) => {
+    
+    // Apply current filter
+    const filteredData = filterMessages(data);
+    
+    filteredData.forEach((entry, index) => {
         const chatWrapper = document.createElement('div');
         chatWrapper.className = 'chat-wrapper';
 
@@ -136,12 +151,28 @@ async function fetchDataAndUpdate() {
 document.getElementById('loadMessagesBtn').addEventListener('click', function() {
     this.style.display = 'none';
     isPollingActive = true;
+    document.getElementById('filterButtons').classList.remove('hidden'); // Show filter buttons
     fetchDataAndUpdate();
     pollingInterval = setInterval(() => {
         if (isPollingActive) {
             fetchDataAndUpdate();
         }
     }, 30000);
+});
+
+// Filter button click handler
+document.querySelectorAll('.filter-button').forEach(button => {
+    button.addEventListener('click', function() {
+        // Update active state
+        document.querySelectorAll('.filter-button').forEach(btn => {
+            btn.classList.remove('active');
+        });
+        this.classList.add('active');
+        
+        // Set new filter and refresh display
+        currentFilter = this.dataset.filter;
+        displayMessages(currentData);
+    });
 });
 
 // Form Toggle
