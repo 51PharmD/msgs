@@ -472,7 +472,7 @@ iframe {
 /* Threaded Replies System */
 .thread {
     position: relative;
-    margin-left: 30px;
+    margin-left: 15px;
     padding-left: 15px;
     border-left: 2px solid rgb(255 228 209 / 51%);
     transition: all 0.3s ease;
