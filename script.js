@@ -135,13 +135,14 @@ function createMessageElement(entry, messageId, replyMap, isReply = false) {
         navigator.clipboard.writeText(messageUrl).then(() => {
             // Visual feedback
             const originalText = messageNumberBadge.textContent;
-            messageNumberBadge.textContent = "Copied!";
-            messageNumberBadge.style.backgroundColor = '#4CAF50'; // Green color
+           messageNumberBadge.textContent = "Copied!";
+messageNumberBadge.classList.add('copied'); // Add a temporary class
+
+setTimeout(() => {
+    messageNumberBadge.textContent = originalText;
+    messageNumberBadge.classList.remove('copied'); // Remove the temporary class
+}, 2000);
             
-            setTimeout(() => {
-                messageNumberBadge.textContent = originalText;
-                messageNumberBadge.style.backgroundColor = isReply ? '#213d53' : '#6B313F';
-            }, 2000);
         }).catch(err => {
             console.error('Failed to copy: ', err);
         });
