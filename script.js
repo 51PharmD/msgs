@@ -195,7 +195,7 @@ function displayMessages(data) {
         if (replyMap[index + 1]) {
             const replyBadge = document.createElement('span'); // Changed from div to span
             replyBadge.className = 'reply-badge';
-            replyBadge.textContent = `${replyMap[index + 1].length} replies`;
+            replyBadge.textContent = `💬 ${replyMap[index + 1].length} Replies`;
             replyBadge.addEventListener('click', () => {
                 replyMap[index + 1].forEach(replyIndex => {
                     const replyElement = document.getElementById(`message-${replyIndex + 1}`);
