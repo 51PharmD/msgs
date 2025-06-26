@@ -653,20 +653,21 @@ iframe {
     border: none;
     cursor: pointer;
     font-size: 1.2em;
-    padding: 5px;
-    margin-left: 5px;
+    padding: 1px;
+    margin-left:5px;
     display: inline-flex;
     align-items: center;
     transition: transform 0.2s ease;
 }
 
 .heart-button .heart-icon {
-    font-size: 1.2em;
+    font-size: 1.3em;
     color: #ffffff;
     transition: all 0.2s ease;
 }
 
 .heart-button.filled .heart-icon {
+    font-size: 0.85em;
     color: transparent;
     background: radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285AEB 90%);
     background-clip: text;
@@ -674,8 +675,8 @@ iframe {
 }
 
 .heart-button .count {
-    font-size: 0.8em;
-    margin-left: 3px;
+    font-size: 0.7em;
+    margin-left: 0px;
     color: #ffffff;
     font-family: sans-serif;
 }
