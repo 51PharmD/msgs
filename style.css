@@ -265,6 +265,7 @@ iframe {
 
 .highlight {
     background-color: #f4d03f;
+    box-shadow: 0 0 10px rgba(244, 208, 63, 0.7);
     transition: background-color 0.5s ease-in-out;
 }
 
@@ -485,6 +486,13 @@ iframe {
     background-color: #f5f5f5;
 }
 
+/* For reply messages */
+.reply .chat-bubble.highlight {
+     background-color: #f4d03f;
+    box-shadow: 0 0 10px rgba(244, 208, 63, 0.7);
+    transition: background-color 0.5s ease-in-out;
+}
+
 .thread::before {
     content: "";
     position: absolute;
@@ -550,3 +558,4 @@ iframe {
 .reply-link:hover {
     text-decoration: underline;
 }
+
