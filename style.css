@@ -467,3 +467,49 @@ iframe {
     z-index: 1000;
     pointer-events: none; /* Prevent interaction */
 }
+
+/* Style for reply links */
+.reply-link {
+    color: #6B313F;
+    text-decoration: underline;
+    cursor: pointer;
+    font-weight: bold;
+    margin-left: 5px;
+}
+
+.reply-link:hover {
+    color: #213d53;
+}
+
+/* Style for reply container */
+.replies-container {
+    margin-top: 8px;
+    padding-left: 20px;
+    border-left: 2px solid #6B313F;
+}
+
+.reply-badge  {
+  background-color: #ffffff; /* White background */
+  color: #6B313F; /* Black or a dark color for text for contrast */
+  padding: 3px 7px; /* More padding for a button feel */
+  border-radius: 15px; /* More rounded corners for a modern button look */
+  font-size: 1 em; /* Slightly larger font for readability as a button */
+  font-weight: 700; /* This makes the text bold */
+  display: inline-flex; /* Use inline-flex for better alignment of content */
+  align-items: center; /* Vertically align content */
+  justify-content: center; /* Horizontally align content */
+  border: 1px solid #cccccc; /* Subtle border for definition */
+  cursor: pointer; /* Indicate it's clickable */
+  transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease; /* Smooth transitions for hover effects */
+}
+
+.reply-badge:hover {
+  background-color: #f0f0f0; /* Slightly grey on hover */
+  border-color: #999999; /* Darker border on hover */
+  color: #333333; /* Slightly darker text on hover */
+}
+
+.reply-badge:active {
+  background-color: #e0e0e0; /* Even darker on active/click */
+  border-color: #666666;
+}
