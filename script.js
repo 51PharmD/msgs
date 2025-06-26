@@ -25,10 +25,38 @@ let isPollingActive = false;
 let pollingInterval = null;
 let currentFilter = 'all';
 
+// Handle hash-based routing
+function handleHashRouting() {
+    const hash = window.location.hash.substring(1);
+    
+    // Check if hash is a message ID (numbers only)
+    if (/^\d+$/.test(hash)) {
+        scrollToMessage();
+        return;
+    }
+    
+    // Handle filter routes
+    const validFilters = ['all', 'pinned', 'latest'];
+    if (validFilters.includes(hash)) {
+        currentFilter = hash;
+        // Update active button
+        document.querySelectorAll('.filter-button').forEach(btn => {
+            btn.classList.remove('active');
+            if (btn.dataset.filter === hash) {
+                btn.classList.add('active');
+            }
+        });
+        if (currentData.length) displayMessages(currentData);
+    }
+}
+
 // Improved scroll function with reply expansion
 function scrollToMessage() {
     const hash = window.location.hash.substring(1);
     if (!hash) return;
+
+    // If hash is a filter, not a message ID
+    if (['all', 'pinned', 'latest'].includes(hash)) return;
 
     const messageElement = document.getElementById(`message-${hash}`);
     if (messageElement) {
@@ -73,7 +101,7 @@ function parseHtml(html) {
             timestamp: cells[0]?.innerText.trim() || '',
             message: cells[1]?.innerText.trim() || '',
             signature: cells[2]?.innerText.trim() || '',
-            tag: cells[3]?.innerText.trim() || '' // 4th column for tags
+            tag: cells[3]?.innerText.trim() || ''
         };
     });
 }
@@ -126,7 +154,7 @@ function createMessageElement(entry, rowNumber, replyMap, isReply = false) {
     // Add click handler to copy message link
     messageNumberBadge.addEventListener('click', (e) => {
         e.stopPropagation();
-        const messageUrl = `${window.location.href.split('#')[0]}#${rowNumber}`;
+        const messageUrl = `${window.location.origin}${window.location.pathname}#${rowNumber}`;
         navigator.clipboard.writeText(messageUrl).then(() => {
             // Visual feedback
             const originalText = messageNumberBadge.textContent;
@@ -348,6 +376,10 @@ document.getElementById('loadMessagesBtn').addEventListener('click', function() 
     this.style.display = 'none';
     isPollingActive = true;
     document.getElementById('filterButtons').classList.remove('hidden');
+    
+    // Check URL hash for initial filter
+    handleHashRouting();
+    
     fetchDataAndUpdate();
     pollingInterval = setInterval(() => {
         if (isPollingActive) {
@@ -364,6 +396,10 @@ document.querySelectorAll('.filter-button').forEach(button => {
         });
         this.classList.add('active');
         currentFilter = this.dataset.filter;
+        
+        // Update URL hash
+        window.location.hash = currentFilter;
+        
         displayMessages(currentData);
     });
 });
@@ -414,6 +450,7 @@ document.getElementById('toggleCloudButton').addEventListener('click', () => {
 });
 
 // Event Listeners
+window.addEventListener('hashchange', handleHashRouting);
 window.addEventListener('hashchange', scrollToMessage);
 
 document.getElementById('scrollToBottomButton').addEventListener('click', () => {
@@ -438,9 +475,14 @@ async function shareChatBubble(chatWrapper, messageId) {
     const urlWithoutHash = window.location.href.split('#')[0];
     const fullMessageText = chatWrapper.querySelector('.message').textContent;
     const snippetLength = 100;
-    const snippetText = fullMessageText.length > snippetLength ? fullMessageText.substring(0, snippetLength) + '...' : fullMessageText;
+    const snippetText = fullMessageText.length > snippetLength ? 
+        fullMessageText.substring(0, snippetLength) + '...' : 
+        fullMessageText;
+    
+    // Use your previous share text format
     const shareText = `${snippetText} —  ممكن تكتب رد هنا!\n`;
-
+    
+    // Use your previous Twitter share link format
     const shareLink = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(urlWithoutHash + '#' + messageId)}`;
 
     const downloadButton = document.createElement('button');
@@ -457,16 +499,46 @@ async function shareChatBubble(chatWrapper, messageId) {
     twitterButton.className = 'emoji-button';
     twitterButton.innerHTML = '🐦';
     twitterButton.addEventListener('click', () => {
+        // Use your previous Twitter sharing method
         const link = document.createElement('a');
         link.href = shareLink;
         link.target = '_blank';
         link.click();
     });
 
+    const copyLinkButton = document.createElement('button');
+    copyLinkButton.className = 'emoji-button';
+    copyLinkButton.innerHTML = '🔗';
+    copyLinkButton.addEventListener('click', () => {
+        const messageUrl = `${urlWithoutHash}#${messageId}`;
+        navigator.clipboard.writeText(messageUrl).then(() => {
+            copyLinkButton.innerHTML = '✓';
+            setTimeout(() => copyLinkButton.innerHTML = '🔗', 2000);
+        });
+    });
+
     const optionsContainer = document.createElement('div');
     optionsContainer.className = 'share-options';
     optionsContainer.appendChild(downloadButton);
     optionsContainer.appendChild(twitterButton);
+    optionsContainer.appendChild(copyLinkButton);
 
     chatWrapper.appendChild(optionsContainer);
+
+    // Close options when clicking outside
+    setTimeout(() => {
+        const clickHandler = (e) => {
+            if (!chatWrapper.contains(e.target) && e.target !== shareButton) {
+                chatWrapper.removeChild(optionsContainer);
+                shareButton.style.display = 'block';
+                document.removeEventListener('click', clickHandler);
+            }
+        };
+        document.addEventListener('click', clickHandler);
+    }, 0);
 }
+    
+// Initialize on load
+document.addEventListener('DOMContentLoaded', () => {
+    handleHashRouting();
+});
