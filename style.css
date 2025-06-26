@@ -473,7 +473,7 @@ iframe {
     position: relative;
     margin-left: 30px;
     padding-left: 15px;
-    border-left: 2px solid rgb(29 61 82);
+    border-left: 2px solid rgb(255 228 209 / 51%);
 }
 
 .thread::before {
@@ -483,7 +483,7 @@ iframe {
     top: 0;
     height: 20px;
     width: 15px;
-    border-bottom: 2px solid rgb(29 61 82);
+    border-bottom: 2px solid rgb(255 228 209 / 51%);
 }
 
 .reply {
