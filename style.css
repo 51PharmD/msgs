@@ -607,7 +607,7 @@ iframe {
  /* to simulate a stroke */
     text-shadow: 
         1px 1px 0 #4CAF50, 
-        -1px -1px 0 #4CAF50, 
+        -1px -1px 0 #ffffff,
         1px -1px 0 #4CAF50, 
         -1px 1px 0 #4CAF50;
     animation: pulse 0.5s ease;
