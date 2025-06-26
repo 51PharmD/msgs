@@ -32,12 +32,16 @@ function scrollToMessage() {
 
     const messageElement = document.getElementById(`message-${hash}`);
     if (messageElement) {
-        // Expand replies when jumping to a message
-        const repliesContainer = messageElement.nextElementSibling;
-        if (repliesContainer && repliesContainer.classList.contains('thread')) {
-            repliesContainer.classList.remove('collapsed');
-            const toggle = messageElement.querySelector('.reply-toggle');
-            if (toggle) toggle.textContent = '▲';
+        // Expand all parent threads when jumping to a message
+        let currentElement = messageElement.parentElement;
+        while (currentElement && currentElement.classList.contains('thread')) {
+            currentElement.classList.remove('collapsed');
+            const parentMessage = currentElement.previousElementSibling;
+            if (parentMessage) {
+                const toggle = parentMessage.querySelector('.reply-toggle');
+                if (toggle) toggle.textContent = '▲';
+            }
+            currentElement = currentElement.parentElement;
         }
 
         messageElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -66,7 +70,7 @@ function parseHtml(html) {
             timestamp: cells[0]?.innerText.trim() || '',
             message: cells[1]?.innerText.trim() || '',
             signature: cells[2]?.innerText.trim() || '',
-            tag: cells[3]?.innerText.trim() || ''  // 4th column for tags
+            tag: cells[3]?.innerText.trim() || '' // 4th column for tags
         };
     });
 }
@@ -106,7 +110,6 @@ function filterMessages(data) {
             return data;
     }
 }
-
 
 function createMessageElement(entry, messageId, replyMap, isReply = false) {
     const chatWrapper = document.createElement('div');
@@ -174,11 +177,11 @@ function createMessageElement(entry, messageId, replyMap, isReply = false) {
         
         const replyBadge = document.createElement('span');
         replyBadge.className = 'reply-badge';
-replyBadge.textContent = `💬 ${replyMap[messageId].length} ${replyMap[messageId].length === 1 ? 'Reply' : 'Replies'}`;
+        replyBadge.textContent = `💬 ${replyMap[messageId].length} ${replyMap[messageId].length === 1 ? 'Reply' : 'Replies'}`;
         
         const replyToggle = document.createElement('span');
         replyToggle.className = 'reply-toggle';
-        replyToggle.textContent = '▼';
+        replyToggle.textContent = '▼'; // Default collapsed state
         
         replyIndicator.appendChild(replyBadge);
         replyIndicator.appendChild(replyToggle);
@@ -224,8 +227,7 @@ replyBadge.textContent = `💬 ${replyMap[messageId].length} ${replyMap[messageI
 function displayMessages(data) {
     const chatContainer = document.getElementById('chat-container');
     chatContainer.innerHTML = '';
-
-    // Apply current filter FIRST (to use original data order for counting)
+    
     const filteredData = filterMessages(data);
     const replyMap = groupReplies(filteredData);
     const pinnedCount = data.filter(entry => entry.tag?.includes('📌')).length;
@@ -246,7 +248,7 @@ function displayMessages(data) {
         
         const messageId = index + 1;
         const threadContainer = document.createElement('div');
-        if (hasReplies) threadContainer.className = 'thread';
+        if (hasReplies) threadContainer.className = 'thread collapsed'; // Default collapsed
         
         const messageElement = createMessageElement(entry, messageId, replyMap);
         threadContainer.appendChild(messageElement);
@@ -254,7 +256,7 @@ function displayMessages(data) {
         // Add replies if they exist
         if (hasReplies) {
             const repliesContainer = document.createElement('div');
-            repliesContainer.className = 'thread';
+            repliesContainer.className = 'thread collapsed'; // Default collapsed
             
             replyMap[index + 1].forEach(replyIndex => {
                 const replyEntry = filteredData[replyIndex];
@@ -265,7 +267,7 @@ function displayMessages(data) {
                 // Recursively add nested replies
                 if (replyMap[replyId]?.length) {
                     const nestedRepliesContainer = document.createElement('div');
-                    nestedRepliesContainer.className = 'thread';
+                    nestedRepliesContainer.className = 'thread collapsed'; // Default collapsed
                     
                     replyMap[replyId].forEach(nestedReplyIndex => {
                         const nestedEntry = filteredData[nestedReplyIndex];
