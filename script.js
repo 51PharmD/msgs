@@ -23,30 +23,29 @@ let isFetching = false;
 let currentData = [];
 let isPollingActive = false;
 let pollingInterval = null;
-let currentFilter = 'all'; // Added filter state
+let currentFilter = 'all';
 
-// Function to scroll to the specific message
+// Improved scroll function with reply expansion
 function scrollToMessage() {
     const hash = window.location.hash.substring(1);
-    if (hash) {
-        const messageElement = document.getElementById(`message-${hash}`);
-        if (messageElement) {
-            messageElement.scrollIntoView({ behavior: 'smooth' });
-            messageElement.classList.add('highlight');
-            
-            // Highlight all replies to this message
-            const replyLinks = document.querySelectorAll(`.reply-link[href="#${hash}"]`);
-            replyLinks.forEach(link => {
-                link.parentElement.parentElement.classList.add('highlight');
-            });
-            
-            setTimeout(() => {
-                messageElement.classList.remove('highlight');
-                replyLinks.forEach(link => {
-                    link.parentElement.parentElement.classList.remove('highlight');
-                });
-            }, 2000);
+    if (!hash) return;
+
+    const messageElement = document.getElementById(`message-${hash}`);
+    if (messageElement) {
+        // Expand replies when jumping to a message
+        const repliesContainer = messageElement.nextElementSibling;
+        if (repliesContainer && repliesContainer.classList.contains('thread')) {
+            repliesContainer.classList.remove('collapsed');
+            const toggle = messageElement.querySelector('.reply-toggle');
+            if (toggle) toggle.textContent = '▲';
         }
+
+        messageElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        messageElement.classList.add('highlight');
+        
+        setTimeout(() => {
+            messageElement.classList.remove('highlight');
+        }, 2000);
     }
 }
 
@@ -67,7 +66,7 @@ function parseHtml(html) {
             timestamp: cells[0]?.innerText.trim() || '',
             message: cells[1]?.innerText.trim() || '',
             signature: cells[2]?.innerText.trim() || '',
-            tag: cells[3]?.innerText.trim() || '' // 4th column for tags
+            tag: cells[3]?.innerText.trim() || ''  // 4th column for tags
         };
     });
 }
@@ -77,37 +76,20 @@ function linkify(text) {
     return text.replace(urlRegex, url => `<a href="${url}" target="_blank" rel="noopener noreferrer">${url}</a>`);
 }
 
-// near other utility functions
 function extractMessageIdFromText(text) {
     const urlMatch = text.match(/https?:\/\/51pharmd\.github\.io\/msgs\/#(\d+)/i);
     return urlMatch ? urlMatch[1] : null;
 }
 
-function createReplyBadge(messageId) {
-    const badge = document.createElement('span');
-    badge.className = 'reply-badge';
-    badge.textContent = `→ #${messageId}`;
-    badge.addEventListener('click', () => {
-        window.location.hash = messageId;
-        scrollToMessage();
-    });
-    return badge;
-}
-
 function groupReplies(messages) {
     const replyMap = {};
-    
-    // First pass: Identify all replies
     messages.forEach((msg, index) => {
         const replyToId = extractMessageIdFromText(msg.message);
         if (replyToId) {
-            if (!replyMap[replyToId]) {
-                replyMap[replyToId] = [];
-            }
+            if (!replyMap[replyToId]) replyMap[replyToId] = [];
             replyMap[replyToId].push(index);
         }
     });
-
     return replyMap;
 }
 
@@ -125,130 +107,182 @@ function filterMessages(data) {
     }
 }
 
+
+function createMessageElement(entry, messageId, replyMap, isReply = false) {
+    const chatWrapper = document.createElement('div');
+    chatWrapper.className = `chat-wrapper ${isReply ? 'reply' : ''}`;
+    chatWrapper.id = `message-${messageId}`;
+
+    const chatBubble = document.createElement('div');
+    chatBubble.className = 'chat-bubble';
+
+    // Pin indicator
+    if (entry.tag?.includes('📌')) {
+        const pin = document.createElement('div');
+        pin.className = 'pin-indicator';
+        pin.textContent = '📌';
+        chatBubble.appendChild(pin);
+    }
+
+    // Message decorations
+    const wire = document.createElement('div');
+    wire.className = 'wire';
+    chatBubble.appendChild(wire);
+
+    const lightsContainer = document.createElement('div');
+    lightsContainer.className = 'lights';
+    for (let i = 0; i < 8; i++) {
+        const light = document.createElement('div');
+        light.className = 'light';
+        lightsContainer.appendChild(light);
+    }
+    chatBubble.appendChild(lightsContainer);
+
+    // Message content
+    const chatTimestamp = document.createElement('div');
+    chatTimestamp.className = 'timestamp';
+    chatTimestamp.textContent = entry.timestamp;
+
+    const chatMessage = document.createElement('div');
+    chatMessage.className = 'message';
+    chatMessage.innerHTML = linkify(entry.message);
+
+    const chatSignature = document.createElement('div');
+    chatSignature.className = 'signature';
+    chatSignature.textContent = `- ${entry.signature}`;
+
+    // Add reply link if this is a reply
+    const replyToId = extractMessageIdFromText(entry.message);
+    if (replyToId) {
+        const replyLink = document.createElement('a');
+        replyLink.className = 'reply-link';
+        replyLink.innerHTML = '↩ Replying to #' + replyToId;
+        replyLink.href = `#${replyToId}`;
+        replyLink.onclick = (e) => {
+            e.preventDefault();
+            window.location.hash = replyToId;
+            scrollToMessage();
+        };
+        chatMessage.appendChild(document.createElement('br'));
+        chatMessage.appendChild(replyLink);
+    }
+
+    // Add reply toggle if this message has replies
+    if (replyMap[messageId]?.length) {
+        const replyIndicator = document.createElement('div');
+        replyIndicator.className = 'reply-indicator';
+        
+        const replyBadge = document.createElement('span');
+        replyBadge.className = 'reply-badge';
+        replyBadge.textContent = `${replyMap[messageId].length} ${replyMap[messageId].length === 1 ? 'reply' : 'replies'}`;
+        
+        const replyToggle = document.createElement('span');
+        replyToggle.className = 'reply-toggle';
+        replyToggle.textContent = '▼';
+        
+        replyIndicator.appendChild(replyBadge);
+        replyIndicator.appendChild(replyToggle);
+        
+        replyIndicator.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const repliesContainer = chatWrapper.nextElementSibling;
+            if (repliesContainer) {
+                repliesContainer.classList.toggle('collapsed');
+                replyToggle.textContent = repliesContainer.classList.contains('collapsed') ? '▼' : '▲';
+            }
+        });
+        
+        chatSignature.appendChild(replyIndicator);
+    }
+
+    // Signature image
+    if (entry.tag?.includes('⚡') && base64Signature) {
+        const signatureImg = document.createElement('img');
+        signatureImg.src = base64Signature;
+        signatureImg.className = 'signature-image';
+        signatureImg.style.display = 'block';
+        signatureImg.alt = 'Yusuf Alhelou';
+        chatBubble.appendChild(signatureImg);
+    }
+
+    // Share button
+    const shareButton = document.createElement('button');
+    shareButton.className = 'share-button';
+    shareButton.innerHTML = '🔗';
+    shareButton.addEventListener('click', () => shareChatBubble(chatWrapper, messageId));
+
+    // Assemble message
+    chatBubble.appendChild(chatTimestamp);
+    chatBubble.appendChild(chatMessage);
+    chatBubble.appendChild(chatSignature);
+    chatWrapper.appendChild(chatBubble);
+    chatWrapper.appendChild(shareButton);
+
+    return chatWrapper;
+}
+
 function displayMessages(data) {
     const chatContainer = document.getElementById('chat-container');
     chatContainer.innerHTML = '';
-    
-      // Apply current filter FIRST (to use original data order for counting)
-     const filteredData = filterMessages(data);
 
+    // Apply current filter FIRST (to use original data order for counting)
+    const filteredData = filterMessages(data);
     const replyMap = groupReplies(filteredData);
-    // Count pinned messages from UNFILTERED data (accurate count)
-
     const pinnedCount = data.filter(entry => entry.tag?.includes('📌')).length;
 
-    // Update pinned button text if button exists
+    // Update pinned button
     const pinnedButton = document.querySelector('[data-filter="pinned"]');
     if (pinnedButton) {
-        pinnedButton.textContent = pinnedCount > 0 
-            ? `Pinned 📌 [${pinnedCount}]` 
-            : 'Pinned 📌'; // Only show number if > 0
+        pinnedButton.textContent = pinnedCount > 0 ? `Pinned 📌 [${pinnedCount}]` : 'Pinned 📌';
     }
 
-    // Create messages
-
+    // Create all top-level messages (those without replies or not being replies)
     filteredData.forEach((entry, index) => {
-        const chatWrapper = document.createElement('div');
-        chatWrapper.className = 'chat-wrapper';
-
-        const chatBubble = document.createElement('div');
-        chatBubble.className = 'chat-bubble';
-        const messageId = `${index + 1}`;
-        chatBubble.id = `message-${messageId}`;
-
-        // Add pin indicator (only for pinned messages)
-        if (entry.tag?.includes('📌')) {
-            const pin = document.createElement('div');
-            pin.className = 'pin-indicator';
-            pin.textContent = '📌';
-            chatBubble.appendChild(pin);
-        }
-
-        // Add wire and lights decoration
-        const wire = document.createElement('div');
-        wire.className = 'wire';
-        chatBubble.appendChild(wire);
-
-        const lightsContainer = document.createElement('div');
-        lightsContainer.className = 'lights';
-        for (let i = 0; i < 8; i++) {
-            const light = document.createElement('div');
-            light.className = 'light';
-            lightsContainer.appendChild(light);
-        }
-        chatBubble.appendChild(lightsContainer);
-
-        // Create message elements
-        const chatTimestamp = document.createElement('div');
-        chatTimestamp.className = 'timestamp';
-        chatTimestamp.textContent = entry.timestamp;
-
-        const chatMessage = document.createElement('div');
-        chatMessage.className = 'message';
-        chatMessage.innerHTML = linkify(entry.message);
-
-        const chatSignature = document.createElement('div');
-        chatSignature.className = 'signature';
-        chatSignature.textContent = `- ${entry.signature}`;
-
-        // Add reply badge if this message has replies (MOVED AFTER chatSignature IS CREATED)
-        if (replyMap[index + 1]) {
-            const replyBadge = document.createElement('span'); // Changed from div to span
-            replyBadge.className = 'reply-badge';
-            replyBadge.textContent = `💬 ${replyMap[index + 1].length} Replies`;
-            replyBadge.addEventListener('click', () => {
-                replyMap[index + 1].forEach(replyIndex => {
-                    const replyElement = document.getElementById(`message-${replyIndex + 1}`);
-                    if (replyElement) {
-                        replyElement.classList.add('highlight');
-                        setTimeout(() => {
-                            replyElement.classList.remove('highlight');
-                        }, 2000);
-                    }
-                });
-            });
-            chatSignature.appendChild(replyBadge);
-        }
-
-        // Add reply link to message text
-        const replyToId = extractMessageIdFromText(entry.message);
-        if (replyToId) {
-            const replyLink = document.createElement('span');
-            replyLink.className = 'reply-link';
-            replyLink.textContent = '↩ Replying to #' + replyToId;
-            replyLink.addEventListener('click', (e) => {
-                e.preventDefault();
-                window.location.hash = replyToId;
-                scrollToMessage();
+        const isReply = extractMessageIdFromText(entry.message);
+        const hasReplies = replyMap[index + 1]?.length > 0;
+        
+        // Skip replies in the first pass (they'll be added in the nesting phase)
+        if (isReply && !hasReplies) return;
+        
+        const messageId = index + 1;
+        const threadContainer = document.createElement('div');
+        if (hasReplies) threadContainer.className = 'thread';
+        
+        const messageElement = createMessageElement(entry, messageId, replyMap);
+        threadContainer.appendChild(messageElement);
+        
+        // Add replies if they exist
+        if (hasReplies) {
+            const repliesContainer = document.createElement('div');
+            repliesContainer.className = 'thread';
+            
+            replyMap[index + 1].forEach(replyIndex => {
+                const replyEntry = filteredData[replyIndex];
+                const replyId = replyIndex + 1;
+                const replyElement = createMessageElement(replyEntry, replyId, replyMap, true);
+                repliesContainer.appendChild(replyElement);
+                
+                // Recursively add nested replies
+                if (replyMap[replyId]?.length) {
+                    const nestedRepliesContainer = document.createElement('div');
+                    nestedRepliesContainer.className = 'thread';
+                    
+                    replyMap[replyId].forEach(nestedReplyIndex => {
+                        const nestedEntry = filteredData[nestedReplyIndex];
+                        const nestedId = nestedReplyIndex + 1;
+                        nestedRepliesContainer.appendChild(
+                            createMessageElement(nestedEntry, nestedId, replyMap, true)
+                        );
+                    });
+                    
+                    repliesContainer.appendChild(nestedRepliesContainer);
+                }
             });
             
-            chatMessage.appendChild(document.createElement('br'));
-            chatMessage.appendChild(replyLink);
+            threadContainer.appendChild(repliesContainer);
         }
-
-         // Add signature image if ⚡️ is found in the tag column
-     if (entry.tag?.includes('⚡️') && base64Signature) {
-    const signatureImg = document.createElement('img');
-    signatureImg.src = base64Signature; // Use preloaded image
-    signatureImg.className = 'signature-image';
-    signatureImg.style.display = 'block'; // Force visible
-    signatureImg.alt = 'Yusuf Alhelou';
-    chatBubble.appendChild(signatureImg);
-}
-
-        // Create share button
-        const shareButton = document.createElement('button');
-        shareButton.className = 'share-button';
-        shareButton.innerHTML = '🔗';
-        shareButton.addEventListener('click', () => shareChatBubble(chatWrapper, messageId));
-
-        // Append all elements (IN CORRECT ORDER)
-        chatBubble.appendChild(chatTimestamp);
-        chatBubble.appendChild(chatMessage);
-        chatBubble.appendChild(chatSignature);
-        chatWrapper.appendChild(chatBubble);
-        chatWrapper.appendChild(shareButton);
-        chatContainer.appendChild(chatWrapper);
+        
+        chatContainer.appendChild(threadContainer);
     });
 
     scrollToMessage();
@@ -278,7 +312,7 @@ async function fetchDataAndUpdate() {
 document.getElementById('loadMessagesBtn').addEventListener('click', function() {
     this.style.display = 'none';
     isPollingActive = true;
-    document.getElementById('filterButtons').classList.remove('hidden'); // Show filter buttons
+    document.getElementById('filterButtons').classList.remove('hidden');
     fetchDataAndUpdate();
     pollingInterval = setInterval(() => {
         if (isPollingActive) {
@@ -290,13 +324,10 @@ document.getElementById('loadMessagesBtn').addEventListener('click', function() 
 // Filter button click handler
 document.querySelectorAll('.filter-button').forEach(button => {
     button.addEventListener('click', function() {
-        // Update active state
         document.querySelectorAll('.filter-button').forEach(btn => {
             btn.classList.remove('active');
         });
         this.classList.add('active');
-        
-        // Set new filter and refresh display
         currentFilter = this.dataset.filter;
         displayMessages(currentData);
     });
@@ -330,31 +361,24 @@ document.getElementById('toggleCloudButton').addEventListener('click', () => {
     const cloudWindow = document.getElementById('cloudWindow');
     const formContainer = document.getElementById('formContainer');
     
-    // Toggle cloud window
     cloudWindow.classList.toggle('hidden');
-    
-    // Update button text
     document.getElementById('toggleCloudButton').textContent = 
         cloudWindow.classList.contains('hidden') ? 'Enter The Cloud' : 'Exit The Cloud';
     
-    // Control polling - ONLY pause when cloud is open
     if (!cloudWindow.classList.contains('hidden')) {
-        // Close form if open
         if (!formContainer.classList.contains('hidden')) {
             formContainer.classList.add('hidden');
             document.getElementById('toggleFormButton').textContent = 'Open Form';
         }
-        // Pause polling
         isPollingActive = false;
     } else {
-        // Only resume polling if it was active before
         if (pollingInterval !== null) {
             isPollingActive = true;
         }
     }
 });
 
-// Other Event Listeners
+// Event Listeners
 window.addEventListener('hashchange', scrollToMessage);
 
 document.getElementById('scrollToBottomButton').addEventListener('click', () => {
