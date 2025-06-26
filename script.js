@@ -45,11 +45,13 @@ function scrollToMessage() {
         }
 
         messageElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        messageElement.classList.add('highlight');
-        
-        setTimeout(() => {
-            messageElement.classList.remove('highlight');
-        }, 2000);
+        const chatBubble = messageElement.querySelector('.chat-bubble');
+        if (chatBubble) {
+            chatBubble.classList.add('highlight');
+            setTimeout(() => {
+                chatBubble.classList.remove('highlight');
+            }, 2000);
+        }
     }
 }
 
