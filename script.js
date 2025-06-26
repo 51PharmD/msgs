@@ -111,6 +111,7 @@ function filterMessages(data) {
     }
 }
 
+
 function createMessageElement(entry, messageId, replyMap, isReply = false) {
     const chatWrapper = document.createElement('div');
     chatWrapper.className = `chat-wrapper ${isReply ? 'reply' : ''}`;
@@ -181,7 +182,7 @@ function createMessageElement(entry, messageId, replyMap, isReply = false) {
         
         const replyToggle = document.createElement('span');
         replyToggle.className = 'reply-toggle';
-        replyToggle.textContent = '▼'; // Default collapsed state
+        replyToggle.textContent = '▼';
         
         replyIndicator.appendChild(replyBadge);
         replyIndicator.appendChild(replyToggle);
@@ -189,7 +190,7 @@ function createMessageElement(entry, messageId, replyMap, isReply = false) {
         replyIndicator.addEventListener('click', (e) => {
             e.stopPropagation();
             const repliesContainer = chatWrapper.nextElementSibling;
-            if (repliesContainer) {
+            if (repliesContainer && repliesContainer.classList.contains('thread')) {
                 repliesContainer.classList.toggle('collapsed');
                 replyToggle.textContent = repliesContainer.classList.contains('collapsed') ? '▼' : '▲';
             }
@@ -260,14 +261,27 @@ function displayMessages(data) {
             const repliesContainer = document.createElement('div');
             repliesContainer.className = 'thread collapsed'; // Hidden by default
             
-            // Add replies
-            replyMap[messageId].forEach(replyIndex => {
-                const replyEntry = filteredData[replyIndex];
-                const replyId = replyIndex + 1;
-                const replyElement = createMessageElement(replyEntry, replyId, replyMap, true);
-                repliesContainer.appendChild(replyElement);
-            });
+            // Recursive function to handle nested replies
+            const processReplies = (replyIndices, container) => {
+                replyIndices.forEach(replyIndex => {
+                    const replyEntry = filteredData[replyIndex];
+                    const replyId = replyIndex + 1;
+                    const hasNestedReplies = replyMap[replyId]?.length > 0;
+                    
+                    const replyElement = createMessageElement(replyEntry, replyId, replyMap, true);
+                    container.appendChild(replyElement);
+                    
+                    // If this reply has its own replies, create nested container
+                    if (hasNestedReplies) {
+                        const nestedContainer = document.createElement('div');
+                        nestedContainer.className = 'thread collapsed';
+                        processReplies(replyMap[replyId], nestedContainer);
+                        container.appendChild(nestedContainer);
+                    }
+                });
+            };
             
+            processReplies(replyMap[messageId], repliesContainer);
             threadContainer.appendChild(repliesContainer);
             chatContainer.appendChild(threadContainer);
         } else {
@@ -278,6 +292,7 @@ function displayMessages(data) {
 
     scrollToMessage();
 }
+
 
 async function fetchDataAndUpdate() {
     if (isFetching || !isPollingActive) return;
