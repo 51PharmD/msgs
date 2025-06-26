@@ -254,7 +254,7 @@ function displayMessages(data) {
     chatContainer.innerHTML = '';
     
     const filteredData = filterMessages(data);
-    const replyMap = groupReplies(filteredData);
+    const replyMap = groupReplies(data); // Use full data for reply mapping
     const pinnedCount = data.filter(entry => entry.tag?.includes('📌')).length;
 
     // Update pinned button
@@ -263,58 +263,60 @@ function displayMessages(data) {
         pinnedButton.textContent = pinnedCount > 0 ? `Pinned 📌 [${pinnedCount}]` : 'Pinned 📌';
     }
 
-    // Create all top-level messages first
+    // Create all messages based on current filter
     filteredData.forEach((entry) => {
         const isReply = extractMessageIdFromText(entry.message);
-        if (isReply) return; // Skip replies in first pass
         
-        const hasReplies = replyMap[entry.rowNumber]?.length > 0;
-        
-        // Create message container
-        const messageElement = createMessageElement(entry, entry.rowNumber, replyMap);
-        
-        if (hasReplies) {
-            // Create thread container
-            const threadContainer = document.createElement('div');
-            threadContainer.className = 'thread-container';
+        // For pinned filter, we want to show all pinned messages including replies
+        if (currentFilter === 'pinned' || !isReply) {
+            const hasReplies = replyMap[entry.rowNumber]?.length > 0;
             
-            // Add message and replies container
-            threadContainer.appendChild(messageElement);
+            // Create message container
+            const messageElement = createMessageElement(entry, entry.rowNumber, replyMap, isReply);
             
-            const repliesContainer = document.createElement('div');
-            repliesContainer.className = 'thread collapsed';
-            
-            // Process replies
-            replyMap[entry.rowNumber].forEach(replyRowNumber => {
-                const replyEntry = data.find(e => e.rowNumber === replyRowNumber);
-                if (replyEntry) {
-                    const replyElement = createMessageElement(replyEntry, replyEntry.rowNumber, replyMap, true);
-                    repliesContainer.appendChild(replyElement);
-                    
-                    // Handle nested replies
-                    if (replyMap[replyEntry.rowNumber]?.length) {
-                        const nestedRepliesContainer = document.createElement('div');
-                        nestedRepliesContainer.className = 'thread collapsed';
+            if (hasReplies) {
+                // Create thread container
+                const threadContainer = document.createElement('div');
+                threadContainer.className = 'thread-container';
+                
+                // Add message and replies container
+                threadContainer.appendChild(messageElement);
+                
+                const repliesContainer = document.createElement('div');
+                repliesContainer.className = 'thread collapsed';
+                
+                // Process replies
+                replyMap[entry.rowNumber].forEach(replyRowNumber => {
+                    const replyEntry = data.find(e => e.rowNumber === replyRowNumber);
+                    if (replyEntry) {
+                        const replyElement = createMessageElement(replyEntry, replyRowNumber, replyMap, true);
+                        repliesContainer.appendChild(replyElement);
                         
-                        replyMap[replyEntry.rowNumber].forEach(nestedReplyRowNumber => {
-                            const nestedEntry = data.find(e => e.rowNumber === nestedReplyRowNumber);
-                            if (nestedEntry) {
-                                nestedRepliesContainer.appendChild(
-                                    createMessageElement(nestedEntry, nestedEntry.rowNumber, replyMap, true)
-                                );
-                            }
-                        });
-                        
-                        repliesContainer.appendChild(nestedRepliesContainer);
+                        // Handle nested replies
+                        if (replyMap[replyRowNumber]?.length) {
+                            const nestedRepliesContainer = document.createElement('div');
+                            nestedRepliesContainer.className = 'thread collapsed';
+                            
+                            replyMap[replyRowNumber].forEach(nestedReplyRowNumber => {
+                                const nestedEntry = data.find(e => e.rowNumber === nestedReplyRowNumber);
+                                if (nestedEntry) {
+                                    nestedRepliesContainer.appendChild(
+                                        createMessageElement(nestedEntry, nestedReplyRowNumber, replyMap, true)
+                                    );
+                                }
+                            });
+                            
+                            repliesContainer.appendChild(nestedRepliesContainer);
+                        }
                     }
-                }
-            });
-            
-            threadContainer.appendChild(repliesContainer);
-            chatContainer.appendChild(threadContainer);
-        } else {
-            // No replies, just add the message
-            chatContainer.appendChild(messageElement);
+                });
+                
+                threadContainer.appendChild(repliesContainer);
+                chatContainer.appendChild(threadContainer);
+            } else {
+                // No replies, just add the message
+                chatContainer.appendChild(messageElement);
+            }
         }
     });
 
