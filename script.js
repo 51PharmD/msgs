@@ -226,12 +226,12 @@ function displayMessages(data) {
             chatMessage.appendChild(replyLink);
         }
 
-        // Add signature image if ⚡️ is found in the tag column
-if (entry.tag?.includes('⚡️') && base64Signature) {
+         // Add signature image if ⚡️ is found in the tag column
+     if (entry.tag?.includes('⚡️') && base64Signature) {
     const signatureImg = document.createElement('img');
-    signatureImg.src = base64Signature;
+    signatureImg.src = base64Signature; // Use preloaded image
     signatureImg.className = 'signature-image';
-    signatureImg.style.display = 'block';
+    signatureImg.style.display = 'block'; // Force visible
     signatureImg.alt = 'Yusuf Alhelou';
     chatBubble.appendChild(signatureImg);
 }
