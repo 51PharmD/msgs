@@ -507,16 +507,29 @@ async function shareChatBubble(chatWrapper, messageId) {
     });
 
     const copyLinkButton = document.createElement('button');
-    copyLinkButton.className = 'emoji-button';
-    copyLinkButton.innerHTML = '🔗';
-    copyLinkButton.addEventListener('click', () => {
-        const messageUrl = `${urlWithoutHash}#${messageId}`;
-        navigator.clipboard.writeText(messageUrl).then(() => {
-            copyLinkButton.innerHTML = '✓';
-            setTimeout(() => copyLinkButton.innerHTML = '🔗', 2000);
-        });
-    });
+copyLinkButton.className = 'emoji-button';
 
+// Add both icons (hidden by default)
+copyLinkButton.innerHTML = `
+    <span class="link-icon">🔗</span>
+    <span class="check-icon" style="display:none">✓</span>
+`;
+
+copyLinkButton.addEventListener('click', () => {
+    const messageUrl = `${urlWithoutHash}#${messageId}`;
+    navigator.clipboard.writeText(messageUrl).then(() => {
+        // Toggle visibility
+        copyLinkButton.querySelector('.link-icon').style.display = 'none';
+        copyLinkButton.querySelector('.check-icon').style.display = 'inline';
+        
+        // Revert after 2 seconds
+        setTimeout(() => {
+            copyLinkButton.querySelector('.link-icon').style.display = 'inline';
+            copyLinkButton.querySelector('.check-icon').style.display = 'none';
+        }, 2000);
+    });
+});
+    
     const optionsContainer = document.createElement('div');
     optionsContainer.className = 'share-options';
     optionsContainer.appendChild(downloadButton);
