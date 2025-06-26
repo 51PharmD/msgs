@@ -238,53 +238,42 @@ function displayMessages(data) {
         pinnedButton.textContent = pinnedCount > 0 ? `Pinned 📌 [${pinnedCount}]` : 'Pinned 📌';
     }
 
-    // Create all top-level messages (those without replies or not being replies)
+    // Create all top-level messages first
     filteredData.forEach((entry, index) => {
         const isReply = extractMessageIdFromText(entry.message);
-        const hasReplies = replyMap[index + 1]?.length > 0;
-        
-        // Skip replies in the first pass (they'll be added in the nesting phase)
-        if (isReply && !hasReplies) return;
+        if (isReply) return; // Skip replies in first pass
         
         const messageId = index + 1;
-        const threadContainer = document.createElement('div');
-        if (hasReplies) threadContainer.className = 'thread collapsed'; // Default collapsed
+        const hasReplies = replyMap[messageId]?.length > 0;
         
+        // Create message container
         const messageElement = createMessageElement(entry, messageId, replyMap);
-        threadContainer.appendChild(messageElement);
         
-        // Add replies if they exist
         if (hasReplies) {
-            const repliesContainer = document.createElement('div');
-            repliesContainer.className = 'thread collapsed'; // Default collapsed
+            // Create thread container
+            const threadContainer = document.createElement('div');
+            threadContainer.className = 'thread-container';
             
-            replyMap[index + 1].forEach(replyIndex => {
+            // Add message and replies container
+            threadContainer.appendChild(messageElement);
+            
+            const repliesContainer = document.createElement('div');
+            repliesContainer.className = 'thread collapsed'; // Hidden by default
+            
+            // Add replies
+            replyMap[messageId].forEach(replyIndex => {
                 const replyEntry = filteredData[replyIndex];
                 const replyId = replyIndex + 1;
                 const replyElement = createMessageElement(replyEntry, replyId, replyMap, true);
                 repliesContainer.appendChild(replyElement);
-                
-                // Recursively add nested replies
-                if (replyMap[replyId]?.length) {
-                    const nestedRepliesContainer = document.createElement('div');
-                    nestedRepliesContainer.className = 'thread collapsed'; // Default collapsed
-                    
-                    replyMap[replyId].forEach(nestedReplyIndex => {
-                        const nestedEntry = filteredData[nestedReplyIndex];
-                        const nestedId = nestedReplyIndex + 1;
-                        nestedRepliesContainer.appendChild(
-                            createMessageElement(nestedEntry, nestedId, replyMap, true)
-                        );
-                    });
-                    
-                    repliesContainer.appendChild(nestedRepliesContainer);
-                }
             });
             
             threadContainer.appendChild(repliesContainer);
+            chatContainer.appendChild(threadContainer);
+        } else {
+            // No replies, just add the message
+            chatContainer.appendChild(messageElement);
         }
-        
-        chatContainer.appendChild(threadContainer);
     });
 
     scrollToMessage();
