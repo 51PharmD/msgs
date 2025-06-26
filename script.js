@@ -174,7 +174,7 @@ function createMessageElement(entry, messageId, replyMap, isReply = false) {
         
         const replyBadge = document.createElement('span');
         replyBadge.className = 'reply-badge';
-        replyBadge.textContent = `${replyMap[messageId].length} ${replyMap[messageId].length === 1 ? 'reply' : 'replies'}`;
+replyBadge.textContent = `💬 ${replyMap[messageId].length} ${replyMap[messageId].length === 1 ? 'Reply' : 'Replies'}`;
         
         const replyToggle = document.createElement('span');
         replyToggle.className = 'reply-toggle';
