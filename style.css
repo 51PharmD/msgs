@@ -468,24 +468,38 @@ iframe {
     pointer-events: none; /* Prevent interaction */
 }
 
-/* Style for reply links */
-.reply-link {
-    color: #6B313F;
-    text-decoration: underline;
+/* Threaded Replies System */
+.thread {
+    position: relative;
+    margin-left: 30px;
+    padding-left: 15px;
+    border-left: 2px solid rgb(29 61 82);
+}
+
+.thread::before {
+    content: "";
+    position: absolute;
+    left: -2px;
+    top: 0;
+    height: 20px;
+    width: 15px;
+    border-bottom: 2px solid rgb(29 61 82);
+}
+
+.reply {
+    margin-top: 10px;
+}
+
+.collapsed {
+    display: none;
+}
+
+.reply-indicator {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    margin-left: 8px;
     cursor: pointer;
-    font-weight: bold;
-    margin-left: 5px;
-}
-
-.reply-link:hover {
-    color: #213d53;
-}
-
-/* Style for reply container */
-.replies-container {
-    margin-top: 8px;
-    padding-left: 20px;
-    border-left: 2px solid #6B313F;
 }
 
 .reply-badge  {
@@ -504,12 +518,26 @@ iframe {
 }
 
 .reply-badge:hover {
-  background-color: #f0f0f0; /* Slightly grey on hover */
+  background-color: #6e313f; /* Slightly grey on hover */
   border-color: #999999; /* Darker border on hover */
-  color: #333333; /* Slightly darker text on hover */
+  color: #ffffff; /* Slightly darker text on hover */
 }
 
-.reply-badge:active {
-  background-color: #e0e0e0; /* Even darker on active/click */
-  border-color: #666666;
+.reply-toggle {
+    font-size: 0.9em;
+    color: #6B313F;
+}
+
+.reply-link {
+    color: #6B313F;
+    text-decoration: none;
+    font-weight: bold;
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    margin-left: 5px;
+}
+
+.reply-link:hover {
+    text-decoration: underline;
 }
