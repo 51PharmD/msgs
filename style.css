@@ -559,3 +559,32 @@ iframe {
     text-decoration: underline;
 }
 
+.message-number {
+    position: absolute;
+    top: -10px;
+    left: -10px;
+    background-color: #ffe4d1;
+    color: #1d3d52;
+    width: 25px;
+    height: 25px;
+    border-radius: 90%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8em;
+    font-weight: bold;
+    z-index: 2;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    cursor: pointer;
+    user-select: none;
+}
+
+.reply .message-number {
+    background-color: #ffffff;
+}
+
+.message-number:hover {
+    transform: scale(1.1);
+    box-shadow: 0 3px 8px rgba(0,0,0,0.3);
+}
+
