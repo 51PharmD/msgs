@@ -474,6 +474,15 @@ iframe {
     margin-left: 30px;
     padding-left: 15px;
     border-left: 2px solid rgb(255 228 209 / 51%);
+    transition: all 0.3s ease;
+}
+
+.thread.collapsed {
+    display: none;
+}
+
+.reply .chat-bubble {
+    background-color: #f5f5f5;
 }
 
 .thread::before {
