@@ -516,7 +516,7 @@ copyLinkButton.innerHTML = `
 `;
 
 copyLinkButton.addEventListener('click', () => {
-    const messageUrl = `${urlWithoutHash}#${messageId}`;
+    const messageUrl = `${urlWithoutHash}#${messageId} `; // ← Space added here
     navigator.clipboard.writeText(messageUrl).then(() => {
         // Toggle visibility
         copyLinkButton.querySelector('.link-icon').style.display = 'none';
