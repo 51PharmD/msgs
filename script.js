@@ -154,7 +154,7 @@ function createMessageElement(entry, rowNumber, replyMap, isReply = false) {
     // Add click handler to copy message link
     messageNumberBadge.addEventListener('click', (e) => {
         e.stopPropagation();
-        const messageUrl = `${window.location.origin}${window.location.pathname}#${rowNumber}`;
+const messageUrl = `${window.location.origin}${window.location.pathname}#${rowNumber} \n`; // ← Space added
         navigator.clipboard.writeText(messageUrl).then(() => {
             // Visual feedback
             const originalText = messageNumberBadge.textContent;
@@ -516,7 +516,7 @@ copyLinkButton.innerHTML = `
 `;
 
 copyLinkButton.addEventListener('click', () => {
-    const messageUrl = `${urlWithoutHash}#${messageId} `; // ← Space added here
+    const messageUrl = `${urlWithoutHash}#${messageId} \n`; // ← Space added here
     navigator.clipboard.writeText(messageUrl).then(() => {
         // Toggle visibility
         copyLinkButton.querySelector('.link-icon').style.display = 'none';
