@@ -33,8 +33,18 @@ function scrollToMessage() {
         if (messageElement) {
             messageElement.scrollIntoView({ behavior: 'smooth' });
             messageElement.classList.add('highlight');
+            
+            // Highlight all replies to this message
+            const replyLinks = document.querySelectorAll(`.reply-link[href="#${hash}"]`);
+            replyLinks.forEach(link => {
+                link.parentElement.parentElement.classList.add('highlight');
+            });
+            
             setTimeout(() => {
                 messageElement.classList.remove('highlight');
+                replyLinks.forEach(link => {
+                    link.parentElement.parentElement.classList.remove('highlight');
+                });
             }, 2000);
         }
     }
@@ -67,6 +77,40 @@ function linkify(text) {
     return text.replace(urlRegex, url => `<a href="${url}" target="_blank" rel="noopener noreferrer">${url}</a>`);
 }
 
+// near other utility functions
+function extractMessageIdFromText(text) {
+    const urlMatch = text.match(/https?:\/\/51pharmd\.github\.io\/msgs\/#(\d+)/i);
+    return urlMatch ? urlMatch[1] : null;
+}
+
+function createReplyBadge(messageId) {
+    const badge = document.createElement('span');
+    badge.className = 'reply-badge';
+    badge.textContent = `→ #${messageId}`;
+    badge.addEventListener('click', () => {
+        window.location.hash = messageId;
+        scrollToMessage();
+    });
+    return badge;
+}
+
+function groupReplies(messages) {
+    const replyMap = {};
+    
+    // First pass: Identify all replies
+    messages.forEach((msg, index) => {
+        const replyToId = extractMessageIdFromText(msg.message);
+        if (replyToId) {
+            if (!replyMap[replyToId]) {
+                replyMap[replyToId] = [];
+            }
+            replyMap[replyToId].push(index);
+        }
+    });
+
+    return replyMap;
+}
+
 // Added filter function
 function filterMessages(data) {
     switch(currentFilter) {
@@ -85,12 +129,14 @@ function displayMessages(data) {
     const chatContainer = document.getElementById('chat-container');
     chatContainer.innerHTML = '';
     
-    // Apply current filter FIRST (to use original data order for counting)
-    const filteredData = filterMessages(data);
-    
+      // Apply current filter FIRST (to use original data order for counting)
+     const filteredData = filterMessages(data);
+
+    const replyMap = groupReplies(filteredData);
     // Count pinned messages from UNFILTERED data (accurate count)
+
     const pinnedCount = data.filter(entry => entry.tag?.includes('📌')).length;
-    
+
     // Update pinned button text if button exists
     const pinnedButton = document.querySelector('[data-filter="pinned"]');
     if (pinnedButton) {
@@ -98,8 +144,9 @@ function displayMessages(data) {
             ? `Pinned 📌 [${pinnedCount}]` 
             : 'Pinned 📌'; // Only show number if > 0
     }
-    
+
     // Create messages
+
     filteredData.forEach((entry, index) => {
         const chatWrapper = document.createElement('div');
         chatWrapper.className = 'chat-wrapper';
@@ -116,7 +163,7 @@ function displayMessages(data) {
             pin.textContent = '📌';
             chatBubble.appendChild(pin);
         }
-        
+
         // Add wire and lights decoration
         const wire = document.createElement('div');
         wire.className = 'wire';
@@ -144,8 +191,43 @@ function displayMessages(data) {
         chatSignature.className = 'signature';
         chatSignature.textContent = `- ${entry.signature}`;
 
-       // Add signature image if ⚡ is found in the tag column
-if (entry.tag?.includes('⚡') && base64Signature) {
+        // Add reply badge if this message has replies (MOVED AFTER chatSignature IS CREATED)
+        if (replyMap[index + 1]) {
+            const replyBadge = document.createElement('span'); // Changed from div to span
+            replyBadge.className = 'reply-badge';
+            replyBadge.textContent = `${replyMap[index + 1].length} replies`;
+            replyBadge.addEventListener('click', () => {
+                replyMap[index + 1].forEach(replyIndex => {
+                    const replyElement = document.getElementById(`message-${replyIndex + 1}`);
+                    if (replyElement) {
+                        replyElement.classList.add('highlight');
+                        setTimeout(() => {
+                            replyElement.classList.remove('highlight');
+                        }, 2000);
+                    }
+                });
+            });
+            chatSignature.appendChild(replyBadge);
+        }
+
+        // Add reply link to message text
+        const replyToId = extractMessageIdFromText(entry.message);
+        if (replyToId) {
+            const replyLink = document.createElement('span');
+            replyLink.className = 'reply-link';
+            replyLink.textContent = '↩ Replying to #' + replyToId;
+            replyLink.addEventListener('click', (e) => {
+                e.preventDefault();
+                window.location.hash = replyToId;
+                scrollToMessage();
+            });
+            
+            chatMessage.appendChild(document.createElement('br'));
+            chatMessage.appendChild(replyLink);
+        }
+
+        // Add signature image if ⚡️ is found in the tag column
+if (entry.tag?.includes('⚡️') && base64Signature) {
     const signatureImg = document.createElement('img');
     signatureImg.src = base64Signature;
     signatureImg.className = 'signature-image';
@@ -160,11 +242,10 @@ if (entry.tag?.includes('⚡') && base64Signature) {
         shareButton.innerHTML = '🔗';
         shareButton.addEventListener('click', () => shareChatBubble(chatWrapper, messageId));
 
-        // Append all elements
+        // Append all elements (IN CORRECT ORDER)
         chatBubble.appendChild(chatTimestamp);
         chatBubble.appendChild(chatMessage);
         chatBubble.appendChild(chatSignature);
-
         chatWrapper.appendChild(chatBubble);
         chatWrapper.appendChild(shareButton);
         chatContainer.appendChild(chatWrapper);
