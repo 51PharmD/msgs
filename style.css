@@ -618,3 +618,19 @@ iframe {
     50% { transform: scale(1.1); }
     100% { transform: scale(1); }
 }
+
+.reply-indicator {
+  cursor: pointer;
+  display: inline-block;
+}
+
+.reply-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px; /* Adds space between text and arrow */
+}
+
+.reply-toggle {
+  font-size: 0.9em;
+  margin-left: 4px; /* Optional: Adjust spacing */
+}
