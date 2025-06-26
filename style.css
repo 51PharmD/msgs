@@ -630,19 +630,9 @@ iframe {
   gap: 4px; /* Adds space between text and arrow */
 }
 
-.heart-button {
-    background: none;
-    border: none;
-    cursor: pointer;
-    font-size: 1.2em;
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    padding: 5px;
-}
-
-.heart-button.animated {
-    animation: heartBeat 0.5s;
+.reply-toggle {
+  font-size: 0.9em;
+  margin-left: 4px; /* Optional: Adjust spacing */
 }
 
 @keyframes heartBeat {
@@ -653,11 +643,44 @@ iframe {
     100% { transform: scale(1); }
 }
 
-.heart-count {
+
+.heart-button.animated {
+    animation: heartBeat 0.5s;
+}
+
+.heart-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1.2em;
+    padding: 5px;
+    margin-left: 5px;
+    display: inline-flex;
+    align-items: center;
+    transition: transform 0.2s ease;
+}
+
+.heart-button .heart-icon {
+    font-size: 1.2em;
+    color: #ffffff;
+    transition: all 0.2s ease;
+}
+
+.heart-button.filled .heart-icon {
+    color: transparent;
+    background: radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285AEB 90%);
+    background-clip: text;
+    -webkit-background-clip: text;
+}
+
+.heart-button .count {
     font-size: 0.8em;
-    color: #6B313F;
+    margin-left: 3px;
+    color: #ffffff;
+    font-family: sans-serif;
 }
-.reply-toggle {
-  font-size: 0.9em;
-  margin-left: 4px; /* Optional: Adjust spacing */
+
+.heart-button:hover {
+    transform: scale(1.1);
 }
+
