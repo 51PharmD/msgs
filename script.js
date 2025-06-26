@@ -66,9 +66,10 @@ function parseHtml(html) {
     const doc = parser.parseFromString(html, 'text/html');
     const rows = doc.querySelectorAll('table tr');
     
-    return Array.from(rows).slice(1).map(row => {
+    return Array.from(rows).slice(1).map((row, index) => {
         const cells = row.querySelectorAll('td');
         return {
+            rowNumber: index + 1, // +1 because: +1 for header row
             timestamp: cells[0]?.innerText.trim() || '',
             message: cells[1]?.innerText.trim() || '',
             signature: cells[2]?.innerText.trim() || '',
@@ -89,35 +90,29 @@ function extractMessageIdFromText(text) {
 
 function groupReplies(messages) {
     const replyMap = {};
-    messages.forEach((msg, index) => {
+    messages.forEach((msg) => {
         const replyToId = extractMessageIdFromText(msg.message);
         if (replyToId) {
             if (!replyMap[replyToId]) replyMap[replyToId] = [];
-            replyMap[replyToId].push(index);
+            replyMap[replyToId].push(msg.rowNumber);
         }
     });
     return replyMap;
 }
 
-// Added filter function
 function filterMessages(data) {
     switch(currentFilter) {
-        case 'all':
-            return data;
-        case 'pinned':
-            return data.filter(entry => entry.tag && entry.tag.includes('📌'));
-        case 'latest':
-            return data.slice(-5).reverse(); // Get last 5 and reverse to show newest first
-        default:
-            return data;
+        case 'all': return data;
+        case 'pinned': return data.filter(entry => entry.tag?.includes('📌'));
+        case 'latest': return data.slice(-5).reverse();
+        default: return data;
     }
 }
 
-
-function createMessageElement(entry, messageId, replyMap, isReply = false) {
+function createMessageElement(entry, rowNumber, replyMap, isReply = false) {
     const chatWrapper = document.createElement('div');
     chatWrapper.className = `chat-wrapper ${isReply ? 'reply' : ''}`;
-    chatWrapper.id = `message-${messageId}`;
+    chatWrapper.id = `message-${rowNumber}`;
 
     const chatBubble = document.createElement('div');
     chatBubble.className = 'chat-bubble';
@@ -125,24 +120,23 @@ function createMessageElement(entry, messageId, replyMap, isReply = false) {
     // Create clickable message number badge
     const messageNumberBadge = document.createElement('div');
     messageNumberBadge.className = 'message-number';
-    messageNumberBadge.innerHTML = `#${messageId}`;
+    messageNumberBadge.textContent = `#${rowNumber}`;
     messageNumberBadge.title = "Click to copy message link";
     
     // Add click handler to copy message link
     messageNumberBadge.addEventListener('click', (e) => {
         e.stopPropagation();
-        const messageUrl = `${window.location.href.split('#')[0]}#${messageId}`;
+        const messageUrl = `${window.location.href.split('#')[0]}#${rowNumber}`;
         navigator.clipboard.writeText(messageUrl).then(() => {
             // Visual feedback
             const originalText = messageNumberBadge.textContent;
-           messageNumberBadge.textContent = "Copied!";
-messageNumberBadge.classList.add('copied'); // Add a temporary class
-
-setTimeout(() => {
-    messageNumberBadge.textContent = originalText;
-    messageNumberBadge.classList.remove('copied'); // Remove the temporary class
-}, 2000);
+            messageNumberBadge.textContent = "Copied!";
+            messageNumberBadge.classList.add('copied');
             
+            setTimeout(() => {
+                messageNumberBadge.textContent = originalText;
+                messageNumberBadge.classList.remove('copied');
+            }, 2000);
         }).catch(err => {
             console.error('Failed to copy: ', err);
         });
@@ -202,13 +196,13 @@ setTimeout(() => {
     }
 
     // Add reply toggle if this message has replies
-    if (replyMap[messageId]?.length) {
+    if (replyMap[rowNumber]?.length) {
         const replyIndicator = document.createElement('div');
         replyIndicator.className = 'reply-indicator';
         
         const replyBadge = document.createElement('span');
         replyBadge.className = 'reply-badge';
-        replyBadge.textContent = `💬 ${replyMap[messageId].length} ${replyMap[messageId].length === 1 ? 'Reply' : 'Replies'}`;
+        replyBadge.textContent = `💬 ${replyMap[rowNumber].length} ${replyMap[rowNumber].length === 1 ? 'Reply' : 'Replies'}`;
         
         const replyToggle = document.createElement('span');
         replyToggle.className = 'reply-toggle';
@@ -243,7 +237,7 @@ setTimeout(() => {
     const shareButton = document.createElement('button');
     shareButton.className = 'share-button';
     shareButton.innerHTML = '🔗';
-    shareButton.addEventListener('click', () => shareChatBubble(chatWrapper, messageId));
+    shareButton.addEventListener('click', () => shareChatBubble(chatWrapper, rowNumber));
 
     // Assemble message
     chatBubble.appendChild(chatTimestamp);
@@ -270,15 +264,14 @@ function displayMessages(data) {
     }
 
     // Create all top-level messages first
-    filteredData.forEach((entry, index) => {
+    filteredData.forEach((entry) => {
         const isReply = extractMessageIdFromText(entry.message);
         if (isReply) return; // Skip replies in first pass
         
-        const messageId = index + 1;
-        const hasReplies = replyMap[messageId]?.length > 0;
+        const hasReplies = replyMap[entry.rowNumber]?.length > 0;
         
         // Create message container
-        const messageElement = createMessageElement(entry, messageId, replyMap);
+        const messageElement = createMessageElement(entry, entry.rowNumber, replyMap);
         
         if (hasReplies) {
             // Create thread container
@@ -289,29 +282,34 @@ function displayMessages(data) {
             threadContainer.appendChild(messageElement);
             
             const repliesContainer = document.createElement('div');
-            repliesContainer.className = 'thread collapsed'; // Hidden by default
+            repliesContainer.className = 'thread collapsed';
             
-            // Recursive function to handle nested replies
-            const processReplies = (replyIndices, container) => {
-                replyIndices.forEach(replyIndex => {
-                    const replyEntry = filteredData[replyIndex];
-                    const replyId = replyIndex + 1;
-                    const hasNestedReplies = replyMap[replyId]?.length > 0;
+            // Process replies
+            replyMap[entry.rowNumber].forEach(replyRowNumber => {
+                const replyEntry = data.find(e => e.rowNumber === replyRowNumber);
+                if (replyEntry) {
+                    const replyElement = createMessageElement(replyEntry, replyEntry.rowNumber, replyMap, true);
+                    repliesContainer.appendChild(replyElement);
                     
-                    const replyElement = createMessageElement(replyEntry, replyId, replyMap, true);
-                    container.appendChild(replyElement);
-                    
-                    // If this reply has its own replies, create nested container
-                    if (hasNestedReplies) {
-                        const nestedContainer = document.createElement('div');
-                        nestedContainer.className = 'thread collapsed';
-                        processReplies(replyMap[replyId], nestedContainer);
-                        container.appendChild(nestedContainer);
+                    // Handle nested replies
+                    if (replyMap[replyEntry.rowNumber]?.length) {
+                        const nestedRepliesContainer = document.createElement('div');
+                        nestedRepliesContainer.className = 'thread collapsed';
+                        
+                        replyMap[replyEntry.rowNumber].forEach(nestedReplyRowNumber => {
+                            const nestedEntry = data.find(e => e.rowNumber === nestedReplyRowNumber);
+                            if (nestedEntry) {
+                                nestedRepliesContainer.appendChild(
+                                    createMessageElement(nestedEntry, nestedEntry.rowNumber, replyMap, true)
+                                );
+                            }
+                        });
+                        
+                        repliesContainer.appendChild(nestedRepliesContainer);
                     }
-                });
-            };
+                }
+            });
             
-            processReplies(replyMap[messageId], repliesContainer);
             threadContainer.appendChild(repliesContainer);
             chatContainer.appendChild(threadContainer);
         } else {
@@ -322,7 +320,6 @@ function displayMessages(data) {
 
     scrollToMessage();
 }
-
 
 async function fetchDataAndUpdate() {
     if (isFetching || !isPollingActive) return;
