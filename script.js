@@ -226,27 +226,22 @@ const messageUrl = `${window.location.origin}${window.location.pathname}#${rowNu
     // Add reply toggle if this message has replies
     if (replyMap[rowNumber]?.length) {
         const replyIndicator = document.createElement('div');
-        replyIndicator.className = 'reply-indicator';
-        
-        const replyBadge = document.createElement('span');
-        replyBadge.className = 'reply-badge';
-        replyBadge.textContent = `💬 ${replyMap[rowNumber].length} ${replyMap[rowNumber].length === 1 ? 'Reply' : 'Replies'}`;
-        
-        const replyToggle = document.createElement('span');
-        replyToggle.className = 'reply-toggle';
-        replyToggle.textContent = '▼';
-        
-        replyIndicator.appendChild(replyBadge);
-        replyIndicator.appendChild(replyToggle);
-        
+replyIndicator.className = 'reply-indicator';
+replyIndicator.innerHTML = `
+  <span class="reply-badge">
+    💬 ${replyMap[rowNumber].length} ${replyMap[rowNumber].length === 1 ? 'Reply' : 'Replies'} 
+    <span class="reply-toggle">▼</span>
+  </span>
+`;
         replyIndicator.addEventListener('click', (e) => {
-            e.stopPropagation();
-            const repliesContainer = chatWrapper.nextElementSibling;
-            if (repliesContainer && repliesContainer.classList.contains('thread')) {
-                repliesContainer.classList.toggle('collapsed');
-                replyToggle.textContent = repliesContainer.classList.contains('collapsed') ? '▼' : '▲';
-            }
-        });
+  e.stopPropagation();
+  const repliesContainer = chatWrapper.nextElementSibling;
+  if (repliesContainer && repliesContainer.classList.contains('thread')) {
+    repliesContainer.classList.toggle('collapsed');
+    const toggle = replyIndicator.querySelector('.reply-toggle');
+    toggle.textContent = repliesContainer.classList.contains('collapsed') ? '▼' : '▲';
+  }
+});
         
         chatSignature.appendChild(replyIndicator);
     }
