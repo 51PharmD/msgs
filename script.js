@@ -132,7 +132,7 @@ function filterMessages(data) {
     switch(currentFilter) {
         case 'all': return data;
         case 'pinned': return data.filter(entry => entry.tag?.includes('📌'));
-        case 'latest': return data.slice(-5).reverse();
+        case 'latest': return data.slice(-10).reverse();
         default: return data;
     }
 }
