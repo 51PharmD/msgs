@@ -131,7 +131,7 @@ function groupReplies(messages) {
 function filterMessages(data) {
     switch(currentFilter) {
         case 'all': return data;
-        case 'pinned': return data.filter(entry => entry.tag?.includes('📌'));
+        case 'pinned': return data.filter(entry => entry.tag?.includes('📌')).reverse();
         case 'latest': return data.slice(-10).reverse();
         default: return data;
     }
