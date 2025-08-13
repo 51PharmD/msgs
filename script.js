@@ -2,7 +2,7 @@
 let base64Signature; // Global variable to store the result
 
 async function prepareSignature() {
-    const imgUrl = 'https://raw.githubusercontent.com/51PharmD/msgs/refs/heads/main/YusufAlhelou.png';
+    const imgUrl = 'https://raw.githubusercontent.com/51Pharmd/msgs/refs/heads/main/YusufAlhelou.png';
     try {
         const response = await fetch(imgUrl);
         const blob = await response.blob();
@@ -131,7 +131,7 @@ function createMessageElement(entry, rowNumber, replyMap, isReply = false) {
     // Add click handler to copy message link
     messageNumberBadge.addEventListener('click', (e) => {
         e.stopPropagation();
-const messageUrl = `${window.location.origin}${window.location.pathname}#${rowNumber} \n`; // ← Space added
+        const messageUrl = `${window.location.origin}${window.location.pathname}#${rowNumber} \n`; // ← Space added
         navigator.clipboard.writeText(messageUrl).then(() => {
             // Visual feedback
             const originalText = messageNumberBadge.textContent;
@@ -327,8 +327,11 @@ async function fetchDataAndUpdate() {
     if (isFetching || !isPollingActive) return;
     isFetching = true;
 
+    // Dynamically create and add the loader element
+    const chatContainer = document.getElementById('chat-container');
+    chatContainer.innerHTML = '<div id="loader" class="loader"></div>';
+
     try {
-        // --- THIS IS THE NEW CODE ---
         const webAppUrl = 'https://script.google.com/macros/s/AKfycbxeeifi8ozgTCJrJQtn56hrWfeak7823Ko7MlQV2Xe8saLQyPuSpaYzMtW5-8npmBHZqQ/exec';
         const response = await fetch(webAppUrl);
         const rawData = await response.json();
@@ -336,17 +339,21 @@ async function fetchDataAndUpdate() {
         // Add a rowNumber to each entry for compatibility
         const newData = rawData.map((entry, index) => ({
             ...entry,
-            rowNumber: index + 1, // +2 because row 1 is headers, and spreadsheet rows are 1-based
+            rowNumber: index + 2, // +2 because row 1 is headers, and spreadsheet rows are 1-based
         }));
 
         if (JSON.stringify(newData) !== JSON.stringify(currentData)) {
             currentData = newData;
             displayMessages(newData);
         }
-        // --- END OF NEW CODE ---
         
     } catch (error) {
         console.error('Error fetching data:', error);
+        // Remove the loader on error
+        const loader = document.getElementById('loader');
+        if (loader) {
+            loader.remove();
+        }
     } finally {
         isFetching = false;
     }
@@ -536,6 +543,3 @@ copyLinkButton.addEventListener('click', () => {
 document.addEventListener('DOMContentLoaded', () => {
     handleHashRouting();
 });
-
-
-
