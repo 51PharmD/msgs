@@ -336,7 +336,7 @@ async function fetchDataAndUpdate() {
         // Add a rowNumber to each entry for compatibility
         const newData = rawData.map((entry, index) => ({
             ...entry,
-            rowNumber: index + 3, // +2 because row 1 is headers, and spreadsheet rows are 1-based
+            rowNumber: index + 1, // +2 because row 1 is headers, and spreadsheet rows are 1-based
         }));
 
         if (JSON.stringify(newData) !== JSON.stringify(currentData)) {
@@ -536,6 +536,7 @@ copyLinkButton.addEventListener('click', () => {
 document.addEventListener('DOMContentLoaded', () => {
     handleHashRouting();
 });
+
 
 
 
