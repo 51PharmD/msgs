@@ -83,29 +83,6 @@ function scrollToMessage() {
     }
 }
 
-async function fetchHtmlContent(pubhtmlUrl) {
-    const urlWithTimestamp = `${pubhtmlUrl}?t=${new Date().getTime()}`;
-    const response = await fetch(urlWithTimestamp);
-    return await response.text();
-}
-
-function parseHtml(html) {
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(html, 'text/html');
-    const rows = doc.querySelectorAll('table tr');
-    
-    return Array.from(rows).slice(1).map((row, index) => {
-        const cells = row.querySelectorAll('td');
-        return {
-            rowNumber: index + 1, // +1 because: +1 for header row
-            timestamp: cells[0]?.innerText.trim() || '',
-            message: cells[1]?.innerText.trim() || '',
-            signature: cells[2]?.innerText.trim() || '',
-            tag: cells[3]?.innerText.trim() || ''
-        };
-    });
-}
-
 function linkify(text) {
     const urlRegex = /(https?:\/\/[^\s]+)/g;
     return text.replace(urlRegex, url => `<a href="${url}" target="_blank" rel="noopener noreferrer">${url}</a>`);
@@ -351,14 +328,23 @@ async function fetchDataAndUpdate() {
     isFetching = true;
 
     try {
-        const pubhtmlUrl = 'https://script.google.com/macros/s/AKfycbzgyg6jEzLTyJ6XOTw4RiUUGp6NkxuliRG_t9LWeGR0BadXgrSnggxU-iyMmEK0oJ5cWw/exec';
-        const html = await fetchHtmlContent(pubhtmlUrl);
-        const newData = parseHtml(html);
+        // --- THIS IS THE NEW CODE ---
+        const webAppUrl = 'YOUR_NEW_WEB_APP_URL_HERE';
+        const response = await fetch(webAppUrl);
+        const rawData = await response.json();
         
+        // Add a rowNumber to each entry for compatibility
+        const newData = rawData.map((entry, index) => ({
+            ...entry,
+            rowNumber: index + 2, // +2 because row 1 is headers, and spreadsheet rows are 1-based
+        }));
+
         if (JSON.stringify(newData) !== JSON.stringify(currentData)) {
             currentData = newData;
             displayMessages(newData);
         }
+        // --- END OF NEW CODE ---
+        
     } catch (error) {
         console.error('Error fetching data:', error);
     } finally {
@@ -550,4 +536,3 @@ copyLinkButton.addEventListener('click', () => {
 document.addEventListener('DOMContentLoaded', () => {
     handleHashRouting();
 });
-
