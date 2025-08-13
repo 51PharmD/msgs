@@ -253,9 +253,6 @@ function displayMessages(data) {
     const chatContainer = document.getElementById('chat-container');
     chatContainer.innerHTML = '';
     
-    // Hide the loader once messages are ready to be displayed
-    document.getElementById('loader').classList.add('hidden');
-
     const filteredData = filterMessages(data);
     const replyMap = groupReplies(data); // Use full data for reply mapping
     const pinnedCount = data.filter(entry => entry.tag?.includes('📌')).length;
@@ -330,29 +327,26 @@ async function fetchDataAndUpdate() {
     if (isFetching || !isPollingActive) return;
     isFetching = true;
 
-    // Show the loader before fetching starts
-    document.getElementById('loader').classList.remove('hidden');
-
     try {
-        const webAppUrl = 'https://script.google.com/macros/s/AKfycbzIzHa11zr_zw17FL9BvJWVevqbXoPs-Jr0Y3qUA5wjHwHcGs6ISzF5h3G5Hedi2ok7yQ/exec';
+        // --- THIS IS THE NEW CODE ---
+        const webAppUrl = 'https://script.google.com/macros/s/AKfycbxeeifi8ozgTCJrJQtn56hrWfeak7823Ko7MlQV2Xe8saLQyPuSpaYzMtW5-8npmBHZqQ/exec';
         const response = await fetch(webAppUrl);
         const rawData = await response.json();
         
         // Add a rowNumber to each entry for compatibility
         const newData = rawData.map((entry, index) => ({
             ...entry,
-            rowNumber: index + 2, // +2 because row 1 is headers, and spreadsheet rows are 1-based
+            rowNumber: index + 1, // +2 because row 1 is headers, and spreadsheet rows are 1-based
         }));
 
         if (JSON.stringify(newData) !== JSON.stringify(currentData)) {
             currentData = newData;
             displayMessages(newData);
         }
+        // --- END OF NEW CODE ---
         
     } catch (error) {
         console.error('Error fetching data:', error);
-        // Hide loader even on error
-        document.getElementById('loader').classList.add('hidden');
     } finally {
         isFetching = false;
     }
@@ -542,3 +536,6 @@ copyLinkButton.addEventListener('click', () => {
 document.addEventListener('DOMContentLoaded', () => {
     handleHashRouting();
 });
+
+
+
