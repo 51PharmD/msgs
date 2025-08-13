@@ -351,7 +351,7 @@ async function fetchDataAndUpdate() {
     isFetching = true;
 
     try {
-        const pubhtmlUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQazrkD8DxsLDMhQ4X78vjlIjq1wos7C-0dge7NDG0EBkJ7jhePsJYXCGUvMV79GaNcAa1hJYS_M-5Z/pubhtml';
+        const pubhtmlUrl = 'https://script.google.com/macros/s/AKfycbzgyg6jEzLTyJ6XOTw4RiUUGp6NkxuliRG_t9LWeGR0BadXgrSnggxU-iyMmEK0oJ5cWw/exec';
         const html = await fetchHtmlContent(pubhtmlUrl);
         const newData = parseHtml(html);
         
@@ -550,3 +550,4 @@ copyLinkButton.addEventListener('click', () => {
 document.addEventListener('DOMContentLoaded', () => {
     handleHashRouting();
 });
+
