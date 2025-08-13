@@ -373,7 +373,7 @@ document.getElementById('loadMessagesBtn').addEventListener('click', function() 
         if (isPollingActive) {
             fetchDataAndUpdate();
         }
-    }, 30000);
+    }, 300000);
 });
 
 // Filter button click handler
@@ -543,4 +543,5 @@ copyLinkButton.addEventListener('click', () => {
 document.addEventListener('DOMContentLoaded', () => {
     handleHashRouting();
 });
+
 
