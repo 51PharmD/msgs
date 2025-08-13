@@ -329,7 +329,7 @@ async function fetchDataAndUpdate() {
 
     try {
         // --- THIS IS THE NEW CODE ---
-        const webAppUrl = 'https://script.google.com/macros/s/AKfycbzPvCcPPd-rGX8_XYmJnmmAOzAeHR04PphRH9LqJfXiC4Z5DxGgeciFrKIHarBPmg157w/exec';
+        const webAppUrl = 'https://script.google.com/macros/s/AKfycbxeeifi8ozgTCJrJQtn56hrWfeak7823Ko7MlQV2Xe8saLQyPuSpaYzMtW5-8npmBHZqQ/exec';
         const response = await fetch(webAppUrl);
         const rawData = await response.json();
         
@@ -536,4 +536,5 @@ copyLinkButton.addEventListener('click', () => {
 document.addEventListener('DOMContentLoaded', () => {
     handleHashRouting();
 });
+
 
